@@ -112,6 +112,20 @@ services:
       retries: 5
     restart: unless-stopped
 
+  # MLFlow Tracking Server
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.15.1
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow/mlflow.db
+      - MLFLOW_ARTIFACT_ROOT=/mlartifacts
+    volumes:
+      - mlflow_data:/mlflow
+      - mlflow_artifacts:/mlartifacts
+    ports:
+      - "5000:5000"
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri ${MLFLOW_BACKEND_STORE_URI:-sqlite:////mlflow/mlflow.db} --default-artifact-root ${MLFLOW_ARTIFACT_ROOT:-/mlartifacts}
+    restart: unless-stopped
+
   # Celery Worker (for background tasks)
   celery:
     build:
@@ -152,6 +166,36 @@ services:
     command: celery -A antiaging_backend beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: unless-stopped
 
+  # FastAPI service (side-by-side during transition)
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-antiaging_user}:${POSTGRES_PASSWORD:-antiaging_password}@db:5432/${POSTGRES_DB:-antiaging_db}
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001 --reload
+    restart: unless-stopped
+
+  # Streamlit MVP frontend
+  streamlit:
+    build:
+      context: ./streamlit_app
+      dockerfile: Dockerfile
+    environment:
+      API_URL: http://fastapi:8001
+    ports:
+      - "8501:8501"
+    depends_on:
+      - fastapi
+    restart: unless-stopped
+
 volumes:
   postgres_data:
     driver: local
@@ -162,6 +206,10 @@ volumes:
   backend_media:
     driver: local
   frontend_build:
+    driver: local
+  mlflow_data:
+    driver: local
+  mlflow_artifacts:
     driver: local
 
 networks:
