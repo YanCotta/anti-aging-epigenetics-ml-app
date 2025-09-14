@@ -3,6 +3,22 @@
 
 This is the single, authoritative roadmap for building the MVP and preparing thesis materials. It consolidates project decisions: switch to FastAPI for the API layer, add a neural network alongside the Random Forest, and integrate MLFlow for experiment tracking. We keep what still serves the MVP (React/Next.js later, Postgres, Docker, ONNX/SHAP, synthetic data). Timeline remains ~6 weeks with buffer.
 
+## 🎯 Actionable GitHub Issues
+
+**This development plan has been converted into 20 specific, actionable GitHub issues.**
+
+- **Quick Start:** See `GITHUB_ISSUES.md` for an organized overview and implementation strategy
+- **Detailed Issues:** See `DETAILED_ISSUES.md` for complete issue descriptions with acceptance criteria
+- **Import Ready:** Use `github_issues.json` to import issues directly into GitHub via API
+- **Labels & Milestones:** Pre-defined label system and milestone structure for project organization
+
+Each issue includes:
+- Clear acceptance criteria and definition of done
+- Implementation notes and technical guidance  
+- File modification lists and dependencies
+- Priority levels and phase assignments
+- Milestone alignment with timeline below
+
 ## Goals
 
 - Deliver a secure, explainable ML MVP where users upload genetics + submit habits and receive a biological-age estimate and recommendations with explanations.
@@ -84,6 +100,47 @@ Phase 5: Thesis + Demo (Oct 7 – Oct 15 + buffer)
 
 ## Implementation Details (Actionable)
 
+**✅ All implementation details have been converted to GitHub Issues**
+
+The sections below provide context, but for actionable tasks, see:
+- `GITHUB_ISSUES.md` - Organized overview and quick reference  
+- `DETAILED_ISSUES.md` - Complete issue descriptions
+- `github_issues.json` - Import-ready GitHub API format
+
+### Issue Summary by Phase
+
+**Phase 1 (Sep 1-7): Setup + Data**
+- Issue #1: Scale synthetic dataset to 5000 records  
+- Issue #2: Validate data distributions and quality checks
+
+**Phase 2 (Sep 8-18): Backend + ML**  
+- Issue #3: FastAPI authentication with JWT
+- Issue #4: Data upload and habits endpoints
+- Issue #5: ML preprocessing pipeline  
+- Issue #6: Random Forest with ONNX & SHAP
+- Issue #7: MLP neural network with PyTorch
+- Issue #8: Prediction endpoint with model selection
+
+**Phase 3 (Sep 19-29): Frontend + Integration**
+- Issue #9: Streamlit MVP with end-to-end integration
+- Issue #10: React migration planning and API stabilization  
+- Issue #11: End-to-end integration testing
+
+**Phase 4 (Sep 30-Oct 6): Docker, Testing, Validation**
+- Issue #12: Docker infrastructure and health checks
+- Issue #13: Comprehensive testing suite (≥70% coverage)
+- Issue #14: Performance optimization and load testing
+
+**Phase 5 (Oct 7-15): Thesis + Demo**  
+- Issue #15: MLFlow model comparison analysis
+- Issue #16: Ethics and limitations documentation
+- Issue #17: Demo preparation and presentation materials
+
+**Backlog Items**
+- Issue #18: Migrate Django ORM to SQLAlchemy
+- Issue #19: Advanced CSV schema validation  
+- Issue #20: Enhanced model explanations
+
 Backend APIs (FastAPI)
 
 - POST /signup: create user, return bearer token
@@ -108,12 +165,17 @@ Testing
 
 - Unit tests for preprocessing, training, prediction; API tests for auth, upload, submit, predict happy/edge paths.
 
-## Backlog/Next Work Items (shortlist)
+## Backlog/Next Work Items
 
-- Migrate persistence from Django ORM to SQLAlchemy models in fastapi_app.
-- Implement true CSV schema validation for upload-genetic.
-- SHAP explanations wired to RF; NN explanations can use kernel SHAP or feature importances proxy if needed.
-- Replace Django container command with Uvicorn once FastAPI endpoints are ready, or keep both behind NGINX temporarily.
+**✅ Converted to GitHub Issues #18-20**
+
+See `GITHUB_ISSUES.md` and `DETAILED_ISSUES.md` for complete backlog items:
+
+- **Issue #18:** Migrate persistence from Django ORM to SQLAlchemy models
+- **Issue #19:** Implement true CSV schema validation for upload-genetic  
+- **Issue #20:** Enhanced SHAP explanations and advanced interpretability features
+
+All backlog items include detailed acceptance criteria, implementation notes, and priority levels.
 
 ## Runbook (high level)
 

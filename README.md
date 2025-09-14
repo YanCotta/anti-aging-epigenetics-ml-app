@@ -6,6 +6,18 @@ Product of my undergrad thesis in Biological Sciences (BS) - An anti-aging epige
 
 See the finalized roadmap in `DEV_PLAN.md`.
 
+**🚀 Ready for Implementation:**
+- **`GITHUB_ISSUES.md`** - 20 actionable GitHub issues with implementation strategy
+- **`DETAILED_ISSUES.md`** - Complete issue descriptions with acceptance criteria  
+- **`github_issues.json`** - Import-ready format for GitHub API/manual creation
+- **`DEV_PLAN.md`** - Original comprehensive development plan and context
+
+### Quick Start
+1. Create GitHub labels and milestones from `GITHUB_ISSUES.md`
+2. Import issues from `github_issues.json` or create manually using `DETAILED_ISSUES.md`  
+3. Start with Phase 1 high-priority issues (#1-2)
+4. Follow the 5-phase timeline for systematic MVP development
+
 ## Architecture (current)
 
 - Backend: `FastAPI` + `SQLAlchemy` + JWT (`python-jose`, `passlib`), served by `uvicorn`.
