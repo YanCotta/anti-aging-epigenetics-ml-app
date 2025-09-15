@@ -1,15 +1,106 @@
-#PLACEHOLDER CODE #1
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import random
+import os
+from pathlib import Path
+import warnings
+from typing import Dict, List, Tuple
 
 
-def generate_synthetic_data(n_samples=1000, output_path=None):
-    """Generate synthetic anti-aging dataset"""
+# Aging-related genes and their known variants
+AGING_RELATED_SNPS = {
+    'APOE_rs429358': {'alleles': ['C', 'T'], 'risk_allele': 'T', 'effect': 3.0},  # APOE4
+    'APOE_rs7412': {'alleles': ['C', 'T'], 'risk_allele': 'T', 'effect': 1.5},   # APOE2
+    'FOXO3_rs2802292': {'alleles': ['G', 'T'], 'risk_allele': 'G', 'effect': -1.2},  # Longevity
+    'SIRT1_rs7069102': {'alleles': ['C', 'G'], 'risk_allele': 'G', 'effect': 1.8},   # Aging
+    'TP53_rs1042522': {'alleles': ['C', 'G'], 'risk_allele': 'G', 'effect': 1.0},    # DNA repair
+    'CDKN2A_rs10757278': {'alleles': ['A', 'G'], 'risk_allele': 'G', 'effect': 2.2}, # Cellular aging
+    'TERT_rs2736100': {'alleles': ['A', 'C'], 'risk_allele': 'C', 'effect': 1.5},    # Telomerase
+    'TERC_rs12696304': {'alleles': ['C', 'G'], 'risk_allele': 'G', 'effect': 1.3},   # Telomerase RNA
+    'IGF1_rs35767': {'alleles': ['C', 'T'], 'risk_allele': 'T', 'effect': 1.1},      # Growth hormone
+    'KLOTHO_rs9536314': {'alleles': ['C', 'T'], 'risk_allele': 'T', 'effect': -0.8}, # Anti-aging
+}
+
+# CpG sites used in aging clocks (simplified subset)
+AGING_CPG_SITES = [
+    'cg09809672', 'cg02228185', 'cg16867657', 'cg25809905', 'cg17861230',
+    'cg06493994', 'cg19761273', 'cg09809672', 'cg17760862', 'cg23696862',
+    'cg01620164', 'cg25410668', 'cg15611023', 'cg27405400', 'cg16419235',
+    'cg00339382', 'cg06126421', 'cg18473521', 'cg21572722', 'cg25138706'
+]
+
+
+def generate_genetic_markers(age: int, gender: str, seed: int) -> Dict:
+    """
+    Generate realistic genetic markers including SNPs and CpG methylation.
     
-    np.random.seed(42)
-    random.seed(42)
+    Args:
+        age (int): Individual's chronological age
+        gender (str): Gender ('M' or 'F')
+        seed (int): Random seed for reproducibility
+    
+    Returns:
+        Dict: Dictionary containing genetic markers
+    """
+    np.random.seed(seed)
+    genetic_data = {}
+    
+    # Generate SNP genotypes
+    aging_score = 0
+    for snp_id, snp_info in AGING_RELATED_SNPS.items():
+        # Generate genotype (two alleles)
+        allele1 = np.random.choice(snp_info['alleles'])
+        allele2 = np.random.choice(snp_info['alleles'])
+        genotype = f"{allele1}{allele2}"
+        
+        # Calculate aging effect
+        risk_count = [allele1, allele2].count(snp_info['risk_allele'])
+        aging_score += risk_count * snp_info['effect']
+        
+        genetic_data[snp_id] = genotype
+    
+    # Generate CpG methylation values (0-1, age-dependent)
+    for cpg_site in AGING_CPG_SITES:
+        # Base methylation with age-related drift
+        base_methylation = np.random.uniform(0.3, 0.7)
+        age_effect = (age - 25) * 0.002  # Gradual change with age
+        noise = np.random.normal(0, 0.05)
+        
+        methylation = np.clip(base_methylation + age_effect + noise, 0, 1)
+        genetic_data[f"{cpg_site}_methylation"] = round(methylation, 4)
+    
+    # Calculate overall genetic aging score
+    genetic_data['genetic_aging_score'] = round(aging_score, 2)
+    
+    # Add some derived genetic metrics
+    genetic_data['longevity_alleles'] = sum(1 for snp in ['FOXO3_rs2802292', 'KLOTHO_rs9536314'] 
+                                           if genetic_data[snp].count('T') > 0)
+    genetic_data['risk_alleles'] = sum(1 for snp in ['APOE_rs429358', 'CDKN2A_rs10757278'] 
+                                      if snp in genetic_data and 
+                                      genetic_data[snp].count(AGING_RELATED_SNPS[snp]['risk_allele']) > 0)
+    
+    return genetic_data
+
+
+def generate_synthetic_data(n_samples=5000, output_path=None, random_seed=42):
+    """
+    Generate synthetic anti-aging dataset with enhanced validation and quality checks.
+    
+    Args:
+        n_samples (int): Number of samples to generate (default: 5000)
+        output_path (str): Path to save the CSV file (optional)
+        random_seed (int): Random seed for reproducibility (default: 42)
+    
+    Returns:
+        pd.DataFrame: Generated synthetic dataset
+    """
+    
+    # Set random seeds for reproducibility
+    np.random.seed(random_seed)
+    random.seed(random_seed)
+    
+    print(f"Generating {n_samples} synthetic samples with seed {random_seed}...")
     
     data = []
     
@@ -29,12 +120,12 @@ def generate_synthetic_data(n_samples=1000, output_path=None):
         smoking = random.choice([0, 1])
         alcohol_consumption = np.random.randint(0, 20)  # drinks per week
         
-        # Genetic/Epigenetic markers (simplified)
-        methylation_score = np.random.uniform(0.2, 0.9)
-        telomere_length = np.random.uniform(4000, 16000)
-        dna_damage_score = np.random.uniform(0.1, 0.7)
-        gene_expression_aging = np.random.uniform(0.1, 1.0)
-        epigenetic_clock_value = np.random.uniform(0.3, 1.3)
+        # Generate realistic genetic data
+        genetic_data = generate_genetic_markers(age, gender, random_seed + i)
+        
+        # Telomere length (realistic range)
+        telomere_length = np.random.normal(8000, 2000)  # Base pairs
+        telomere_length = max(4000, min(15000, telomere_length))  # Clamp to realistic range
         
         # Environmental factors
         pollution_exposure = np.random.uniform(0.1, 0.8)
@@ -51,9 +142,8 @@ def generate_synthetic_data(n_samples=1000, output_path=None):
         biological_age = _calculate_biological_age(
             age, gender, bmi, exercise_frequency, sleep_hours, 
             stress_level, diet_quality, smoking, alcohol_consumption,
-            methylation_score, telomere_length, dna_damage_score,
-            gene_expression_aging, epigenetic_clock_value,
-            pollution_exposure, systolic_bp, cholesterol
+            genetic_data, telomere_length, pollution_exposure, 
+            systolic_bp, cholesterol
         )
         
         # Add some noise
@@ -73,11 +163,7 @@ def generate_synthetic_data(n_samples=1000, output_path=None):
             'diet_quality': diet_quality,
             'smoking': smoking,
             'alcohol_consumption': alcohol_consumption,
-            'methylation_score': round(methylation_score, 4),
             'telomere_length': round(telomere_length, 0),
-            'dna_damage_score': round(dna_damage_score, 4),
-            'gene_expression_aging': round(gene_expression_aging, 4),
-            'epigenetic_clock_value': round(epigenetic_clock_value, 4),
             'pollution_exposure': round(pollution_exposure, 4),
             'sun_exposure': round(sun_exposure, 4),
             'occupation_stress': round(occupation_stress, 4),
@@ -88,21 +174,144 @@ def generate_synthetic_data(n_samples=1000, output_path=None):
             'biological_age': round(biological_age, 2)
         }
         
+        # Add genetic markers to sample
+        sample.update(genetic_data)
+        
         data.append(sample)
     
     df = pd.DataFrame(data)
     
+    # Perform data validation
+    validation_report = validate_dataset(df)
+    print(f"\nData Validation Report:")
+    print(f"Dataset shape: {df.shape}")
+    print(f"Missing values: {df.isnull().sum().sum()}")
+    print(f"Duplicate records: {df.duplicated().sum()}")
+    print(f"Biological age range: {df['biological_age'].min():.2f} - {df['biological_age'].max():.2f}")
+    print(f"Age range: {df['age'].min()} - {df['age'].max()}")
+    
+    if not validation_report['valid']:
+        warnings.warn(f"Data validation issues detected: {validation_report['issues']}")
+    
     if output_path:
+        # Ensure output directory exists
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path, index=False)
         print(f"Generated {n_samples} samples and saved to {output_path}")
     
     return df
 
 
+def validate_dataset(df):
+    """
+    Comprehensive data validation function.
+    
+    Args:
+        df (pd.DataFrame): Dataset to validate
+    
+    Returns:
+        dict: Validation report with issues and recommendations
+    """
+    issues = []
+    valid = True
+    
+    # Check for missing values
+    missing_values = df.isnull().sum().sum()
+    if missing_values > 0:
+        issues.append(f"Found {missing_values} missing values")
+        valid = False
+    
+    # Check for duplicates
+    duplicates = df.duplicated().sum()
+    if duplicates > 0:
+        issues.append(f"Found {duplicates} duplicate records")
+        valid = False
+    
+    # Validate age distributions
+    age_stats = df['age'].describe()
+    if age_stats['min'] < 18 or age_stats['max'] > 100:
+        issues.append(f"Age range unusual: {age_stats['min']}-{age_stats['max']}")
+        valid = False
+    
+    # Validate BMI ranges
+    bmi_outliers = df[(df['bmi'] < 15) | (df['bmi'] > 50)].shape[0]
+    if bmi_outliers > df.shape[0] * 0.05:  # More than 5% outliers
+        issues.append(f"Excessive BMI outliers: {bmi_outliers} records")
+        valid = False
+    
+    # Validate biological age relationship
+    bio_age_correlation = df['age'].corr(df['biological_age'])
+    if bio_age_correlation < 0.5:  # Should be reasonably correlated
+        issues.append(f"Poor age-biological_age correlation: {bio_age_correlation:.3f}")
+        valid = False
+    
+    # Check gender distribution
+    gender_dist = df['gender'].value_counts(normalize=True)
+    if any(gender_dist < 0.3) or any(gender_dist > 0.7):
+        issues.append("Gender distribution imbalanced")
+        valid = False
+    
+    # Validate lifestyle factor ranges
+    if df['exercise_frequency'].min() < 0 or df['exercise_frequency'].max() > 7:
+        issues.append("Exercise frequency out of valid range (0-7)")
+        valid = False
+    
+    if df['stress_level'].min() < 1 or df['stress_level'].max() > 10:
+        issues.append("Stress level out of valid range (1-10)")
+        valid = False
+    
+    if df['diet_quality'].min() < 1 or df['diet_quality'].max() > 10:
+        issues.append("Diet quality out of valid range (1-10)")
+        valid = False
+    
+    # Validate genetic markers
+    if 'genetic_aging_score' in df.columns:
+        genetic_score_range = df['genetic_aging_score'].max() - df['genetic_aging_score'].min()
+        if genetic_score_range < 5:  # Should have reasonable variation
+            issues.append("Genetic aging score lacks variation")
+            valid = False
+    
+    if df['telomere_length'].min() < 2000 or df['telomere_length'].max() > 20000:
+        issues.append("Telomere length out of realistic range")
+        valid = False
+    
+    # Validate CpG methylation values
+    methylation_cols = [col for col in df.columns if col.endswith('_methylation')]
+    for col in methylation_cols:
+        if df[col].min() < 0 or df[col].max() > 1:
+            issues.append(f"CpG methylation {col} out of valid range (0-1)")
+            valid = False
+    
+    # Validate SNP genotypes
+    snp_cols = [col for col in df.columns if any(gene in col for gene in ['APOE', 'FOXO3', 'SIRT1', 'TP53', 'CDKN2A', 'TERT', 'TERC', 'IGF1', 'KLOTHO'])]
+    for col in snp_cols:
+        # Check that all genotypes are 2 characters and contain only valid nucleotides
+        genotypes = df[col].unique()
+        valid_nucleotides = {'A', 'T', 'G', 'C'}
+        for genotype in genotypes:
+            if len(genotype) != 2 or not all(nt in valid_nucleotides for nt in genotype):
+                issues.append(f"Invalid genotype format in {col}: {genotype}")
+                valid = False
+                break
+    
+    return {
+        'valid': valid,
+        'issues': issues,
+        'summary': {
+            'n_records': len(df),
+            'n_features': len(df.columns),
+            'missing_values': missing_values,
+            'duplicates': duplicates,
+            'age_range': (df['age'].min(), df['age'].max()),
+            'bio_age_range': (df['biological_age'].min(), df['biological_age'].max()),
+            'age_correlation': bio_age_correlation
+        }
+    }
+
+
 def _calculate_biological_age(age, gender, bmi, exercise_freq, sleep_hours,
                              stress_level, diet_quality, smoking, alcohol,
-                             methylation, telomere_length, dna_damage,
-                             gene_expression, epigenetic_clock, pollution,
+                             genetic_data, telomere_length, pollution,
                              systolic_bp, cholesterol):
     """Calculate biological age based on various factors"""
     
@@ -140,11 +349,14 @@ def _calculate_biological_age(age, gender, bmi, exercise_freq, sleep_hours,
         bio_age -= 0.5
     
     # Genetic/Epigenetic factors
-    bio_age += (1 - methylation) * 10  # Lower methylation = older
+    bio_age += genetic_data.get('genetic_aging_score', 0) * 0.5
     bio_age += (1 - telomere_length / 10000) * 8  # Shorter telomeres = older
-    bio_age += dna_damage * 10  # More damage = older
-    bio_age += gene_expression * 5  # Higher expression = older
-    bio_age += (epigenetic_clock - 1) * 8  # Higher clock = older
+    
+    # CpG methylation effect (average of aging-sensitive sites)
+    cpg_values = [v for k, v in genetic_data.items() if k.endswith('_methylation')]
+    if cpg_values:
+        avg_methylation = np.mean(cpg_values)
+        bio_age += (avg_methylation - 0.5) * 10  # Deviation from baseline
     
     # Environmental factors
     bio_age += pollution * 3
@@ -162,40 +374,69 @@ def _calculate_biological_age(age, gender, bmi, exercise_freq, sleep_hours,
     return bio_age
 
 
-def generate_test_datasets():
-    """Generate multiple test datasets"""
+def generate_test_datasets(datasets_dir='datasets'):
+    """
+    Generate multiple test datasets for different scenarios.
     
-    datasets_dir = 'datasets'
+    Args:
+        datasets_dir (str): Directory to save datasets (relative to current script)
+    """
     
-    # Training dataset
+    # Get the directory where this script is located
+    script_dir = Path(__file__).parent
+    datasets_path = script_dir / datasets_dir
+    datasets_path.mkdir(exist_ok=True)
+    
+    print(f"Generating datasets in: {datasets_path}")
+    
+    # Training dataset (main dataset)
     print("Generating training dataset...")
     train_data = generate_synthetic_data(
         n_samples=5000, 
-        output_path=f'{datasets_dir}/training.csv'
+        output_path=datasets_path / 'train.csv'
     )
     
-    # Test datasets
+    # Test datasets for different scenarios
     test_scenarios = [
-        ('test_young.csv', {'age_range': (25, 40), 'n_samples': 500}),
-        ('test_middle.csv', {'age_range': (40, 60), 'n_samples': 500}),
-        ('test_elderly.csv', {'age_range': (60, 80), 'n_samples': 500}),
-        ('test_healthy.csv', {'lifestyle_bias': 'healthy', 'n_samples': 300}),
-        ('test_unhealthy.csv', {'lifestyle_bias': 'unhealthy', 'n_samples': 300}),
+        ('test_small.csv', {'n_samples': 100}),  # Small test set
+        ('test_young.csv', {'age_range': (25, 40), 'n_samples': 200}),
+        ('test_middle.csv', {'age_range': (40, 60), 'n_samples': 200}), 
+        ('test_elderly.csv', {'age_range': (60, 80), 'n_samples': 200}),
+        ('test_healthy.csv', {'lifestyle_bias': 'healthy', 'n_samples': 150}),
+        ('test_unhealthy.csv', {'lifestyle_bias': 'unhealthy', 'n_samples': 150}),
     ]
     
     for filename, params in test_scenarios:
         print(f"Generating {filename}...")
         test_data = generate_specialized_dataset(**params)
-        test_data.to_csv(f'{datasets_dir}/{filename}', index=False)
+        output_path = datasets_path / filename
+        test_data.to_csv(output_path, index=False)
+        print(f"Saved {len(test_data)} samples to {output_path}")
+    
+    # Generate summary report
+    generate_dataset_summary(datasets_path)
     
     print("All datasets generated successfully!")
+    return datasets_path
 
 
-def generate_specialized_dataset(age_range=None, lifestyle_bias=None, n_samples=500):
-    """Generate specialized test datasets"""
+def generate_specialized_dataset(age_range=None, lifestyle_bias=None, n_samples=500, random_seed=42):
+    """
+    Generate specialized test datasets with specific characteristics.
     
-    # Start with base synthetic data
-    data = generate_synthetic_data(n_samples * 2)  # Generate more, then filter
+    Args:
+        age_range (tuple): Min and max age for filtering (optional)
+        lifestyle_bias (str): 'healthy' or 'unhealthy' bias (optional)
+        n_samples (int): Target number of samples
+        random_seed (int): Random seed for reproducibility
+    
+    Returns:
+        pd.DataFrame: Filtered specialized dataset
+    """
+    
+    # Generate more samples initially to allow for filtering
+    initial_samples = min(n_samples * 3, 10000)  
+    data = generate_synthetic_data(initial_samples, random_seed=random_seed)
     
     if age_range:
         min_age, max_age = age_range
@@ -207,7 +448,8 @@ def generate_specialized_dataset(age_range=None, lifestyle_bias=None, n_samples=
             (data['exercise_frequency'] >= 4) & 
             (data['stress_level'] <= 6) & 
             (data['diet_quality'] >= 7) & 
-            (data['smoking'] == 0)
+            (data['smoking'] == 0) &
+            (data['alcohol_consumption'] <= 7)
         ]
     elif lifestyle_bias == 'unhealthy':
         # Bias towards unhealthier lifestyle choices
@@ -215,110 +457,110 @@ def generate_specialized_dataset(age_range=None, lifestyle_bias=None, n_samples=
             (data['exercise_frequency'] <= 2) | 
             (data['stress_level'] >= 7) | 
             (data['diet_quality'] <= 4) | 
-            (data['smoking'] == 1)
+            (data['smoking'] == 1) |
+            (data['alcohol_consumption'] >= 14)
         ]
     
-    # Take only the requested number of samples
-    return data.head(n_samples).reset_index(drop=True)
+    # Take only the requested number of samples (or all if fewer available)
+    final_data = data.head(n_samples).reset_index(drop=True)
+    
+    if len(final_data) < n_samples * 0.8:  # Less than 80% of requested samples
+        warnings.warn(f"Only generated {len(final_data)} samples, requested {n_samples}")
+    
+    return final_data
+
+
+def generate_dataset_summary(datasets_path):
+    """
+    Generate a summary report of all datasets in the specified directory.
+    
+    Args:
+        datasets_path (Path): Path to the datasets directory
+    """
+    
+    summary_path = datasets_path / 'dataset_summary.md'
+    
+    with open(summary_path, 'w') as f:
+        f.write("# Dataset Generation Summary\n\n")
+        f.write(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+        
+        # List all CSV files and their basic stats
+        csv_files = list(datasets_path.glob('*.csv'))
+        
+        f.write("## Dataset Overview\n\n")
+        f.write("| Dataset | Samples | Features | Age Range | Bio Age Range |\n")
+        f.write("|---------|---------|----------|-----------|---------------|\n")
+        
+        total_samples = 0
+        
+        for csv_file in sorted(csv_files):
+            try:
+                df = pd.read_csv(csv_file)
+                total_samples += len(df)
+                
+                age_min, age_max = df['age'].min(), df['age'].max()
+                bio_age_min, bio_age_max = df['biological_age'].min(), df['biological_age'].max()
+                
+                f.write(f"| {csv_file.name} | {len(df)} | {len(df.columns)} | "
+                       f"{age_min}-{age_max} | {bio_age_min:.1f}-{bio_age_max:.1f} |\n")
+                
+            except Exception as e:
+                f.write(f"| {csv_file.name} | ERROR | - | - | - |\n")
+                print(f"Error reading {csv_file}: {e}")
+        
+        f.write(f"\n**Total Samples:** {total_samples}\n")
+        f.write(f"**Total Datasets:** {len(csv_files)}\n\n")
+        
+        # Add validation summary for main training dataset
+        train_file = datasets_path / 'train.csv'
+        if train_file.exists():
+            f.write("## Training Dataset Validation\n\n")
+            try:
+                train_df = pd.read_csv(train_file)
+                validation_report = validate_dataset(train_df)
+                
+                f.write(f"**Validation Status:** {'✅ PASSED' if validation_report['valid'] else '❌ FAILED'}\n\n")
+                
+                if validation_report['issues']:
+                    f.write("### Issues Found:\n")
+                    for issue in validation_report['issues']:
+                        f.write(f"- {issue}\n")
+                    f.write("\n")
+                
+                f.write("### Summary Statistics:\n")
+                summary = validation_report['summary']
+                f.write(f"- Records: {summary['n_records']}\n")
+                f.write(f"- Features: {summary['n_features']}\n")
+                f.write(f"- Missing Values: {summary['missing_values']}\n")
+                f.write(f"- Duplicates: {summary['duplicates']}\n")
+                f.write(f"- Age-BioAge Correlation: {summary['age_correlation']:.3f}\n")
+                
+            except Exception as e:
+                f.write(f"Error validating training dataset: {e}\n")
+        
+        f.write("\n## Data Generation Process\n\n")
+        f.write("This synthetic dataset was generated using enhanced algorithms that:\n")
+        f.write("- Maintain realistic demographic distributions\n")
+        f.write("- Include comprehensive lifestyle and health factors\n")
+        f.write("- Simulate genetic/epigenetic markers\n")
+        f.write("- Apply biologically-informed aging calculations\n")
+        f.write("- Include data validation and quality checks\n")
+    
+    print(f"Dataset summary saved to: {summary_path}")
 
 
 if __name__ == "__main__":
-    # Generate basic training data
-    data = generate_synthetic_data(1000, 'training_data.csv')
-    print(f"Dataset shape: {data.shape}")
+    # Generate enhanced training data with 5000 samples
+    print("=== Anti-Aging ML Dataset Generation ===")
+    
+    # Generate individual training dataset for quick testing
+    data = generate_synthetic_data(5000, 'train_data.csv')
+    print(f"Training dataset shape: {data.shape}")
     print(f"Biological age stats: {data['biological_age'].describe()}")
     
-    # Generate test datasets
-    generate_test_datasets()
-
-
-    #PLACEHOLDER CODE #2
-    """
-from Bio.Seq import Seq
-import pandas as pd
-import numpy as np
-from scipy.stats import chisquare
-from faker import Faker
-import random
-
-fake = Faker()
-
-# Expanded to 10 SNPs
-snps = {
-    'SIRT1_rs7896005': {'alleles': ['A', 'G'], 'freq': [0.7, 0.3]},
-    'FOXO3_rs2802292': {'alleles': ['C', 'T'], 'freq': [0.6, 0.4]},
-    'APOE_rs429358': {'alleles': ['C', 'T'], 'freq': [0.85, 0.15]},
-    'KL_rs9536314': {'alleles': ['T', 'G'], 'freq': [0.8, 0.2]},
-    'IGF1_rs6220': {'alleles': ['C', 'T'], 'freq': [0.5, 0.5]},
-    'TP53_rs1042522': {'alleles': ['G', 'C'], 'freq': [0.65, 0.35]},
-    'CETP_rs5882': {'alleles': ['A', 'G'], 'freq': [0.4, 0.6]},
-    'SOD2_rs4880': {'alleles': ['C', 'T'], 'freq': [0.55, 0.45]},
-    'MTOR_rs2295080': {'alleles': ['T', 'G'], 'freq': [0.7, 0.3]},
-    'PPARG_rs1801282': {'alleles': ['C', 'G'], 'freq': [0.9, 0.1]},
-}
-
-def generate_genotype(info):
-    alleles = np.random.choice(info['alleles'], 2, p=info['freq'])
-    return '/'.join(sorted(alleles))
-
-def generate_habits():
-    return {
-        'exercises_per_week': max(0, min(7, int(np.random.normal(3.5, 1.5)))),
-        'daily_calories': random.randint(1500, 3000),
-        'alcohol_doses_per_week': random.uniform(0, 14),
-        'years_smoking': random.randint(0, 20),
-        'hours_of_sleep': random.uniform(4, 10),
-        'stress_level': random.randint(1, 10)
-    }
-
-def generate_demographics():
-    return {
-        'age': random.randint(20, 80),
-        'gender': random.choice(['M', 'F', 'Other'])
-    }
-
-def generate_dataset(n):
-    data = []
-    for _ in range(n):
-        genotype = {snp: generate_genotype(info) for snp, info in snps.items()}
-        habits = generate_habits()
-        demo = generate_demographics()
-        # Simulate risk with rules + noise (multi-class)
-        base_risk = 0
-        if habits['alcohol_doses_per_week'] > 7: base_risk += 2
-        if habits['stress_level'] > 7: base_risk += 1
-        if genotype.get('APOE_rs429358') in ['T/C', 'T/T']: base_risk += 1.5
-        risk_score = base_risk + np.random.normal(0, 0.5)
-        if risk_score < 1.5:
-            risk = 'low'
-        elif risk_score < 3:
-            risk = 'medium'
-        else:
-            risk = 'high'
-        data.append({**genotype, **habits, **demo, 'risk': risk})
-    return pd.DataFrame(data)
-
-def validate(df):
-    for snp in snps:
-        observed = df[snp].value_counts(normalize=True).sort_index()
-        p, q = snps[snp]['freq']
-        expected = np.array([p**2, 2*p*q, q**2])
-        if len(observed) == len(expected):
-            stat, p_val = chisquare(observed, expected)
-            if p_val < 0.05:
-                print(f"Warning: Unrealistic frequencies for {snp} (p={p_val})")
-
-# Generate datasets
-df_train = generate_dataset(5000)
-validate(df_train)
-df_train.to_csv('api/data/datasets/training.csv', index=False)
-
-df_test1 = generate_dataset(10)
-df_test1.to_csv('api/data/datasets/test1.csv', index=False)
-
-df_test2 = generate_dataset(1)
-df_test2.to_csv('api/data/datasets/test2.csv', index=False)
-
-print("Datasets generated and validated.")
-
-    """
+    # Generate complete test suite
+    print("\n=== Generating Complete Dataset Suite ===")
+    datasets_dir = generate_test_datasets()
+    
+    print(f"\n✅ All datasets generated successfully in: {datasets_dir}")
+    print("📊 Check dataset_summary.md for detailed statistics")
