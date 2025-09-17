@@ -1,0 +1,13 @@
+# Minimal deps for Phase 2 FastAPI auth & basic endpoints
+fastapi==0.115.12
+uvicorn[standard]==0.30.6
+sqlalchemy==2.0.41
+pydantic==2.11.7
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.1.1
+requests==2.32.5
+numpy==2.3.3
+pandas==2.3.2
+pytest==8.4.2
+pytest-cov==7.0.0
