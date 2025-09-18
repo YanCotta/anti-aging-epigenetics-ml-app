@@ -1,6 +1,5 @@
 # Sistema de Recomendações Personalizadas Anti-Envelhecimento
 
-## Documentação Técnico-Científica para Professores de Doutorado
 
 ### 📚 Índice de Navegação
 
