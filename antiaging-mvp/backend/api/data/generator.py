@@ -61,14 +61,14 @@ def generate_genetic_markers(age: int, gender: str, seed: int) -> Dict:
         genetic_data[snp_id] = genotype
     
     # Generate CpG methylation values (0-1, age-dependent)
-    for cpg_site in AGING_CPG_SITES:
-        # Base methylation with age-related drift
-        base_methylation = np.random.uniform(0.3, 0.7)
-        age_effect = (age - 25) * 0.002  # Gradual change with age
-        noise = np.random.normal(0, 0.05)
-        
-        methylation = np.clip(base_methylation + age_effect + noise, 0, 1)
-        genetic_data[f"{cpg_site}_methylation"] = round(methylation, 4)
+        for cpg_site in AGING_CPG_SITES:
+            # Base methylation with age-related drift (reduced to avoid overly strong linearity)
+            base_methylation = np.random.uniform(0.3, 0.7)
+            age_effect = (age - 25) * 0.0015  # Gradual change with age (reduced)
+            noise = np.random.normal(0, 0.05)
+
+            methylation = np.clip(base_methylation + age_effect + noise, 0, 1)
+            genetic_data[f"{cpg_site}_methylation"] = round(methylation, 4)
     
     # Calculate overall genetic aging score
     genetic_data['genetic_aging_score'] = round(aging_score, 2)
@@ -316,7 +316,7 @@ def _calculate_biological_age(age, gender, bmi, exercise_freq, sleep_hours,
     """Calculate biological age based on various factors"""
     
     # Start with chronological age
-    bio_age = age
+    bio_age = age * 0.85 + 4
     
     # BMI effect
     if bmi < 18.5 or bmi > 30:
@@ -456,7 +456,7 @@ def generate_specialized_dataset(age_range=None, lifestyle_bias=None, n_samples=
         data = data[
             (data['exercise_frequency'] <= 2) | 
             (data['stress_level'] >= 7) | 
-            (data['diet_quality'] <= 4) | 
+                biological_age += np.random.normal(0, 3)
             (data['smoking'] == 1) |
             (data['alcohol_consumption'] >= 14)
         ]
