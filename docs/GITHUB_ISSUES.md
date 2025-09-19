@@ -263,13 +263,18 @@ For immediate implementation, focus on these high-priority issues in order:
 1. **Issue #1:** Scale synthetic dataset (Phase 1)
 2. **Issue #3:** FastAPI authentication (Phase 2)
 3. **Issue #4:** Data upload endpoints (Phase 2)
-4. **Issue #5:** ML preprocessing pipeline (Phase 2)
-5. **Issue #6:** Random Forest training (Phase 2)
-6. **Issue #8:** Prediction endpoint (Phase 2)
-7. **Issue #9:** Streamlit MVP (Phase 3)
-8. **Issue #12:** Docker infrastructure (Phase 4)
-9. **Issue #13:** Testing suite (Phase 4)
-10. **Issue #15:** MLFlow analysis (Phase 5)
+4. **Issue #21:** Linear Regression baseline + MLFlow (Phase 2, pivot)
+5. **Issue #5:** ML preprocessing pipeline (Phase 2)
+6. **Issue #6:** Random Forest training (Phase 2)
+7. **Issue #8:** Prediction endpoint (Phase 2)
+8. **Issue #9:** Streamlit MVP (Phase 3)
+9. **Issue #12:** Docker infrastructure (Phase 4)
+10. **Issue #13:** Testing suite (Phase 4)
+11. **Issue #15:** MLFlow analysis (Phase 5)
+
+### Pivot: Baseline Linear Regression First
+
+To ensure a rigorous comparison across models, we’ve introduced Issue #21 to train a Linear Regression baseline immediately after Issue #4. All subsequent models (RF, MLP) must be logged to MLFlow under a shared experiment name to enable side-by-side comparison (metrics: RMSE, R², MAE; artifacts: model + preprocessor). This pivots the sequence but keeps Phase 2 scope intact.
 
 ## Next Steps
 
