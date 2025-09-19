@@ -49,6 +49,12 @@ Finalize thesis materials and demo preparation
 
 ## Issues
 
+### Pivot Update: Linear Regression Baseline First
+
+To ensure rigorous model comparison, we are introducing a Linear Regression baseline as an explicit task in Phase 2. This baseline will be trained and logged to MLflow immediately after data upload endpoints (Issue #4). Subsequent models (Random Forest, MLP) must be logged to the same experiment to enable side-by-side comparison using standardized regression metrics (RMSE, R², MAE) and shared artifacts (model + preprocessor).
+
+---
+
 ### Issue #1: Scale synthetic dataset to 5000 records with improved validation
 
 **Labels:** phase-1, ml, high-priority
@@ -83,6 +89,42 @@ Scale the current synthetic dataset from its current size to approximately 5000 
 - Dataset size meets requirements (≈5000 records)
 - Documentation is updated with data generation process
 
+
+---
+
+### Issue #41: Train Linear Regression baseline with MLflow tracking and comparison protocol
+
+**Labels:** phase-2, ml, high-priority
+
+**Milestone:** Phase 2: Backend + ML
+
+## Description
+Train a Linear Regression baseline on `backend/api/data/datasets/train.csv`, log metrics and artifacts to MLflow, and establish a comparison protocol that will also be applied to Random Forest and MLP runs.
+
+## Acceptance Criteria
+- [ ] Train Linear Regression using scikit-learn on the prepared features
+- [ ] Use a consistent preprocessing pipeline (serialize preprocessor)
+- [ ] Log to MLflow: params, RMSE, R², MAE; save model and preprocessor artifacts
+- [ ] Create or reuse an experiment name shared by RF/MLP for comparison
+- [ ] Document how to view comparisons in MLflow UI (runs table, metrics plot)
+- [ ] Add a brief summary of baseline results to CHANGELOG
+
+## Implementation Notes
+- Script location: `backend/api/ml/train_linear.py` (ensure runnable via CLI and module)
+- Reuse `DataPreprocessor` for fit/transform; persist artifacts with joblib
+- Use fixed random seed for deterministic splits
+- Consider adding a small README note under `backend/api/ml/` on how to run
+
+## Files to Create/Modify
+- `backend/api/ml/train_linear.py` (ensure robust import when executed directly)
+- `backend/api/ml/preprocessor.py` (ensure save/load methods)
+- `docs/CHANGELOG.md` (append baseline result summary)
+
+## Definition of Done
+- MLflow run exists with metrics and artifacts
+- Artifacts saved under a deterministic output directory
+- Baseline metrics recorded and documented for future comparison
+- Instructions to reproduce are present
 
 ---
 
