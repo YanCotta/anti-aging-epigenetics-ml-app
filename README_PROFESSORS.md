@@ -392,7 +392,7 @@ graph TB
 - **Factory Pattern:** Geração de dados sintéticos modulares
 - **Strategy Pattern:** Seleção de modelos (RF vs MLP) via parâmetro
 
-### **Estratégia Expandida de Machine Learning (Orientação Prof. Fabrício)**
+### **Estratégia Expandida de Machine Learning**
 
 #### **🎯 Paradigmas de Aprendizado a Serem Implementados:**
 
