@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict, Any
+from datetime import datetime
 
 class UserIn(BaseModel):
     username: str
@@ -25,3 +26,20 @@ class PredictResponse(BaseModel):
     prediction: float
     model: str
     explanations: dict
+
+
+class GeneticProfileOut(BaseModel):
+    id: int
+    upload_date: datetime
+    snp_data: Dict[str, Any]
+
+
+class HabitsOut(BaseModel):
+    id: int
+    entry_date: datetime
+    exercises_per_week: int
+    daily_calories: int
+    alcohol_doses_per_week: float
+    years_smoking: int
+    hours_of_sleep: float
+    stress_level: int
