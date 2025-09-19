@@ -22,7 +22,7 @@ Each issue includes:
 ## Goals
 
 - Deliver a secure, explainable ML MVP where users upload genetics + submit habits and receive a biological-age estimate and recommendations with explanations.
-- Implement two ML baselines: Random Forest and a simple MLP. Track experiments with MLFlow.
+- Implement baseline Linear Regression first, then Random Forest and a simple MLP. Track and compare all experiments with MLFlow.
 - Serve predictions through a FastAPI backend (Django code remains during transition but will be replaced).
 
 ## Architecture
@@ -67,9 +67,10 @@ Deliverables: datasets ready under backend/api/data/datasets/.
 
 Phase 2: Backend + ML (Sep 8 – Sep 18)
 
-- Scaffold FastAPI app with endpoints: /health, /signup, /token, /upload-genetic, /submit-habits, /predict?model_type=rf|nn.
+- Scaffold FastAPI app with endpoints: /health, /signup, /token, /upload-genetic, /submit-habits, /predict?model_type=lr|rf|nn.
+- Train a Linear Regression baseline first; log metrics/artifacts to MLFlow; establish comparison protocol.
 - Implement preprocessing pipeline; train RF baseline; export ONNX; SHAP explanations.
-- Add MLP (PyTorch) small architecture; log both models to MLFlow with metrics (F1 macro or regression metrics depending on label), params, and artifacts.
+- Add MLP (PyTorch) small architecture; log all models to MLFlow with metrics (R²/RMSE/MAE for regression), params, and artifacts; compare LR vs RF vs MLP.
 
 Deliverables: working FastAPI endpoints locally; MLFlow runs visible; RF+NN artifacts stored.
 
@@ -116,6 +117,7 @@ The sections below provide context, but for actionable tasks, see:
 **Phase 2 (Sep 8-18): Backend + ML**  
 - Issue #3: FastAPI authentication with JWT
 - Issue #4: Data upload and habits endpoints
+- Issue #21: Linear Regression baseline with MLFlow tracking and comparison
 - Issue #5: ML preprocessing pipeline  
 - Issue #6: Random Forest with ONNX & SHAP
 - Issue #7: MLP neural network with PyTorch
