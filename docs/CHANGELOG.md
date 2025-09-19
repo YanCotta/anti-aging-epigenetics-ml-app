@@ -325,3 +325,45 @@ Implemented secure genetic data upload with strict CSV schema validation, habits
 Issue #4 is now complete. Next: proceed with Issue #21 (Linear Regression baseline with MLflow) per pivot strategy, then continue with Issue #5.
 
 ---
+
+## Phase 2 - Issue #21 Completed ✅ (2025-09-19)
+
+Trained Linear Regression baseline on `backend/api/data/datasets/train.csv` and logged metrics/artifacts to MLflow.
+
+### Training Details
+- Split: 80/20 (seed=42)
+- Features: schema-aligned with `train.csv` minus identifiers/target
+
+### Metrics (test split)
+- RMSE: 2.5151
+- R²: 0.9780
+- MAE: 2.0056
+
+### Artifacts
+- Model: `antiaging-mvp/backend/api/ml/artifacts/linear_baseline/linear_regression_model.pkl`
+- Preprocessor: `antiaging-mvp/backend/api/ml/artifacts/linear_baseline/preprocessor_linear.pkl`
+- MLflow experiment: `linear-baseline` (see `mlruns/`)
+
+These results establish the baseline for upcoming RF/MLP comparisons in MLflow. Next: proceed with Issue #5 (unified preprocessing alignment) and Issue #6 (Random Forest with ONNX + SHAP).
+
+---
+
+## Analysis Note – Linear Regression Baseline (2025-09-19)
+
+Skeptical read of the baseline metrics (RMSE≈2.52, R²≈0.978, MAE≈2.01):
+
+- Context: The synthetic `train.csv` exhibits a high Age↔BioAge correlation (≈0.958 per validation report). Strong linearity can inflate LR performance; these metrics may be near an optimistic ceiling on this dataset.
+- Overfitting check: Metrics are from a single 80/20 split. While LR has low capacity, leakage can still creep in via preprocessing if not split-aware. Our pipeline fits imputers/encoders/scalers on the full X before split. Although labels aren’t used in preprocessing, statistics leakage from test→train can still upwardly bias results.
+- Distribution realism: Synthetic data may not capture real-world heteroskedasticity or non-linearities; generalization to real data could degrade notably.
+- Robustness: No k-fold CV yet; no confidence intervals; no sensitivity analysis to feature subsets or noise.
+
+Planned mitigations (next issues):
+
+- Issue #5: Align preprocessing strictly with split-awareness (fit on train only, then transform test) and ensure identical transform at inference.
+- Expand evaluation with k-fold CV and report mean±std for RMSE/R²/MAE; add residual diagnostics to detect structure not captured by LR.
+- Proceed to Issue #6/#7 to compare RF and MLP under the same MLflow experiment; require the same train/validation protocol; include feature importance/SHAP for sanity.
+- Add a small holdout from a different synthetic distribution (e.g., “unhealthy/healthy” test sets) to test distribution shift.
+
+Conclusion: The LR baseline looks strong on the curated synthetic dataset, but we’ll treat it as an optimistic bound. We’ll validate with stricter evaluation and compare to RF/MLP before drawing conclusions.
+
+---
