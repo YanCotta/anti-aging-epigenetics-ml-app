@@ -297,3 +297,31 @@ Implementation is on-plan; no structural divergences from the architectural or m
 - Environment: local `.venv` used for isolated installs and tests
 
 ---
+
+## Phase 2 - Issue #4 Completed ✅ (2025-09-19)
+
+Implemented secure genetic data upload with strict CSV schema validation, habits submission, and retrieval endpoints.
+
+### Endpoints
+- POST `/upload-genetic`: Validates CSV content-type, max size (2MB), exactly one row; enforces schema based on `train.csv` columns (ignores `biological_age` and `user_id`). Persists first row as JSON per user (latest wins).
+- POST `/submit-habits`: Validates JSON via Pydantic; persists with timestamps.
+- GET `/genetic-profile`: Returns latest user genetic profile.
+- GET `/habits`: Returns latest user habits.
+
+### Validation Rules (CSV)
+- Allowed content types: text/csv, application/csv, application/vnd.ms-excel
+- Size limit: 2 MB
+- Exactly 1 data row required
+- Columns must match `train.csv` minus `biological_age` and `user_id` (no missing, no extras)
+
+### Artifacts
+- Code: `backend/fastapi_app/main.py` (validation + endpoints), `backend/fastapi_app/schemas.py`, `backend/fastapi_app/db.py`
+- Tests: `backend/tests/test_issue4_upload_and_retrieval.py`
+
+### Test Results
+- 3 tests passed (upload success + retrieval, missing column 400, extra column 400)
+- Warnings: deprecation notices (utcnow, pydantic dict()) – non-blocking; to be addressed later
+
+Issue #4 is now complete. Next: proceed with Issue #21 (Linear Regression baseline with MLflow) per pivot strategy, then continue with Issue #5.
+
+---
