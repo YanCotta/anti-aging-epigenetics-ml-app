@@ -1,4 +1,15 @@
-#PLACEHOLDER CODE #1
+"""
+Random Forest Model Trainer for Anti-Aging ML Application
+
+This module provides training functionality for Random Forest models.
+It implements proper data splitting to prevent data leakage and includes
+ONNX export capabilities for production deployment.
+
+Usage:
+    trainer = ModelTrainer()
+    results = trainer.train(data_path="path/to/data.csv")
+"""
+
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
@@ -174,53 +185,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-#PLACEHOLDER CODE #2
-    """
-    from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import f1_score
-from sklearn.pipeline import Pipeline
-import joblib
-from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import FloatTensorType
-import pandas as pd
-import numpy as np
-from .preprocessor import get_preprocessor
-
-# Load data
-df = pd.read_csv('api/data/datasets/training.csv')  # Adjust path if needed
-X = df.drop('risk', axis=1)
-y = df['risk']
-
-# Preprocessor
-preprocessor = get_preprocessor(X)
-
-# Pipeline
-pipeline = Pipeline([
-    ('pre', preprocessor),
-    ('clf', RandomForestClassifier(random_state=42))
-])
-
-# Tune
-params = {
-    'clf__n_estimators': [50, 100],
-    'clf__max_depth': [5, 10]
-}
-grid = GridSearchCV(pipeline, params, cv=5, scoring='f1_macro')
-grid.fit(X, y)
-
-# Save best model
-best_model = grid.best_estimator_
-joblib.dump(best_model, 'api/ml/model.pkl')
-
-# ONNX export
-initial_type = [('input', FloatTensorType([None, len(X.columns)]))]
-onnx_model = convert_sklearn(best_model, initial_types=initial_type, target_opset=12)
-with open('api/ml/model.onnx', 'wb') as f:
-    f.write(onnx_model.SerializeToString())
-
-# Evaluate
-y_pred = best_model.predict(X)
-print(f"F1 Score: {f1_score(y, y_pred, average='macro')}")
-
-    """

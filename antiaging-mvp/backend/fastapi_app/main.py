@@ -22,7 +22,7 @@ app = FastAPI(title="Anti-Aging ML API", version="0.1.0", description="Endpoints
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # TODO: restrict in production
+    allow_origins=["*"],  # Note: Restrict to specific domains in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
