@@ -2,21 +2,22 @@
 
 Product of my undergrad thesis in Biological Sciences (BS) - An anti-aging epigenetics machine learning based software capable of making personalized health recommendations and predictions based on individual genetic data and environmental exposure.
 
-## 🚀 Current Implementation Status
+# Anti-Aging Epigenetics ML Application
 
-**Phase 1: ✅ COMPLETE** - Synthetic Dataset Generation & Validation
-- **5,851 synthetic samples** across 7 datasets with realistic genetic markers
-- **53 features** including 10 aging-related SNPs and 20 CpG methylation sites  
-- **Comprehensive validation pipeline** with automated quality reports
-- **Datasets:** `train.csv` (5,000 samples) + 6 specialized test sets
+Product of my undergraduate thesis in Biological Sciences (BS) - An anti-aging epigenetics machine learning based software capable of making personalized health recommendations and predictions based on individual genetic data and environmental exposure.
 
-**Phase 2: 🛠 IN PROGRESS** - Backend & Authentication
-- **✅ FastAPI Authentication System** - JWT tokens, password hashing, OAuth2 flow
-- **✅ Core Endpoints** - `/signup`, `/token`, `/me`, `/health` with full testing
-- **✅ Security Features** - Password policies, CORS configuration, token validation
-- **⏳ Data Upload** - Endpoints exist, schema validation in progress
+## 🚨 Current Status: Development Paused
 
-See [CHANGELOG.md](docs/CHANGELOG.md) for detailed progress tracking and [IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md) for complete issue breakdown.
+**Critical Issues Identified**: Comprehensive analysis revealed fundamental scientific validity issues requiring immediate attention before continuing development.
+
+**See [ROADMAP.md](docs/ROADMAP.md) for current status, critical issues, and development plan.**
+
+## 📋 Quick Links
+
+- **📍 Current Status & Next Steps**: [ROADMAP.md](docs/ROADMAP.md)
+- **📋 Detailed Issues & Tasks**: [DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)
+- **📝 Implementation History**: [CHANGELOG.md](docs/CHANGELOG.md)
+- **🎓 Academic Overview**: [README_PROFESSORS.md](README_PROFESSORS.md)
 
 ## 📊 Synthetic Datasets Generated
 

@@ -5,6 +5,8 @@
 
 **⚠️ ALL DEVELOPMENT MUST PAUSE UNTIL CRITICAL ISSUES #43-48 ARE RESOLVED**
 
+> **📍 DOCUMENTATION NOTICE**: This document has been superseded by [ROADMAP.md](ROADMAP.md) as of September 21, 2025. Please refer to ROADMAP.md for current status and development plan.
+
 ### **Critical Findings from Comprehensive Analysis**
 
 Our systematic analysis revealed **scientifically implausible results** that invalidate current synthetic data and model performance:
