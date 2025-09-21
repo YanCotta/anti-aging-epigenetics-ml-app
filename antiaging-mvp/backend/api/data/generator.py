@@ -456,7 +456,7 @@ def generate_specialized_dataset(age_range=None, lifestyle_bias=None, n_samples=
         data = data[
             (data['exercise_frequency'] <= 2) | 
             (data['stress_level'] >= 7) | 
-                biological_age += np.random.normal(0, 3)
+            (data['diet_quality'] <= 4) | 
             (data['smoking'] == 1) |
             (data['alcohol_consumption'] >= 14)
         ]
