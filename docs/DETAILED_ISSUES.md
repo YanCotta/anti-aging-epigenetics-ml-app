@@ -128,6 +128,349 @@ Train a Linear Regression baseline on `backend/api/data/datasets/train.csv`, log
 
 ---
 
+### Issue #42: Implement Multivariate Statistical Analysis for Feature Groupings and Colinear Relationships
+
+**Labels:** phase-2, ml, high-priority
+
+**Milestone:** Phase 2: Backend + ML
+
+## Description
+Implement clustering/grouping analysis and canonical correlation analysis to discover colinear relationships between dataset variables. The hypothesis is that variables can be grouped (e.g., SNPs/methylation as genetic factors, lifestyle variables as behavioral factors) with different weights and impacts on model performance based on their colinear relationships.
+
+## Acceptance Criteria
+- [ ] Implement clustering analysis to group similar variables (K-means, hierarchical clustering)
+- [ ] Implement canonical correlation analysis to identify relationships between variable groups
+- [ ] Create feature grouping module that categorizes variables by type (genetic, lifestyle, demographic, health markers)
+- [ ] Analyze colinear relationships within and between groups
+- [ ] Generate comprehensive multivariate analysis report with visualizations
+- [ ] Integrate findings into preprocessing pipeline for group-aware feature engineering
+- [ ] Document feature weights and group impacts for model interpretation
+- [ ] Create validation metrics for group-based feature importance
+
+## Implementation Notes
+- Use scikit-learn for clustering algorithms and feature analysis
+- Implement canonical correlation using scipy.stats or specialized libraries
+- Create visualization functions for correlation matrices and dendrograms
+- Consider Principal Component Analysis (PCA) within groups for dimensionality reduction
+- Ensure analysis is integrated with existing validation pipeline
+
+## Expected Feature Groups
+- **Genetic Group**: SNPs (APOE, FOXO3, SIRT1, etc.) and CpG methylation sites
+- **Lifestyle Group**: exercise_frequency, sleep_hours, stress_level, diet_quality, smoking, alcohol
+- **Demographic Group**: age, gender, height, weight, BMI
+- **Health Markers Group**: systolic_bp, diastolic_bp, cholesterol, glucose, telomere_length
+- **Environmental Group**: pollution_exposure, sun_exposure, occupation_stress
+
+## Files to Create/Modify
+- `backend/api/ml/multivariate_analysis.py` (new - clustering and canonical correlation)
+- `backend/api/data/feature_groups.py` (new - feature grouping definitions)
+- `backend/api/data/validation.py` (update - integrate multivariate analysis)
+- `backend/api/ml/preprocessor.py` (update - group-aware preprocessing)
+
+## Definition of Done
+- Multivariate analysis reveals clear feature groupings and colinear relationships
+- Analysis results are documented with visualizations and statistical significance
+- Feature groups are integrated into preprocessing pipeline
+- Model training can leverage group-based feature engineering
+- Validation report includes multivariate analysis findings
+
+---
+
+## CRITICAL NEW ISSUES - Address Before Original Roadmap
+
+### Issue #43: Critical Synthetic Data Realism Overhaul - Age Correlation Fix
+
+**Labels:** phase-1, ml, critical-priority
+
+**Milestone:** Immediate Fix Required
+
+## Description
+**CRITICAL FINDING**: Current age-biological age correlation (0.945) is scientifically implausible and invalidates all model results. Real aging research shows correlations of 0.6-0.8 maximum. This high correlation makes models appear artificially successful and prevents realistic evaluation.
+
+## Acceptance Criteria
+- [ ] **URGENT**: Reduce age-biological age correlation to realistic range (0.7-0.8)
+- [ ] Add substantial individual variation in aging rates (genetic and environmental)
+- [ ] Introduce realistic noise and measurement error to biological markers
+- [ ] Add outliers representing exceptional agers (both directions)
+- [ ] Implement non-linear aging patterns especially at age extremes
+- [ ] Add sex-specific aging differences in feature relationships
+- [ ] Include population structure variation (ancestry effects on aging)
+- [ ] Validate against published aging biomarker correlations from literature
+- [ ] Add missing values to simulate real-world data collection challenges
+
+## Scientific Justification
+- Real epigenetic clocks (Horvath, Hannum) show R² ~0.7-0.85 with 3-8 year errors
+- Individual aging rates vary dramatically due to genetics, lifestyle, environment
+- Biological aging involves stochastic processes that create natural variance
+- Current synthetic data lacks complexity found in real aging biology
+
+## Implementation Notes
+- Revise biological age calculation to include more noise and individual variation
+- Add genetic modifiers that create realistic inter-individual differences
+- Implement environmental stress factors that modulate aging rates
+- Add measurement error appropriate for biological assays
+- Include rare variants and exceptional aging phenotypes
+
+## Files to Modify
+- `backend/api/data/generator.py` (major revision required)
+- `backend/api/data/validation.py` (update correlation thresholds)
+- All existing model training scripts (results will change significantly)
+
+## Definition of Done
+- Age-biological age correlation reduced to 0.7-0.8 range
+- Individual variation in aging rates reflects biological reality
+- Model performance becomes realistic (R² ~0.6-0.8, MAE 4-8 years)
+- Synthetic data validated against real aging research benchmarks
+
+---
+
+### Issue #44: Genomics-Specific Data Quality and Preprocessing Pipeline
+
+**Labels:** phase-1, ml, high-priority
+
+**Milestone:** Data Quality Foundation
+
+## Description
+**CRITICAL FINDING**: Current preprocessing treats genetic data like generic features, ignoring fundamental genomics principles. SNPs require specialized handling for population genetics, linkage disequilibrium, and proper genetic models.
+
+## Acceptance Criteria
+- [ ] Implement Hardy-Weinberg equilibrium testing for SNP quality control
+- [ ] Add allele frequency validation against reference populations
+- [ ] Implement proper genetic encoding (additive, dominant, recessive models)
+- [ ] Add linkage disequilibrium analysis and pruning capabilities
+- [ ] Create methylation-specific preprocessing (beta vs M-value transformations)
+- [ ] Implement population stratification controls and ancestry informative markers
+- [ ] Add batch effect detection and correction for methylation data
+- [ ] Create feature-type aware preprocessing (genetic vs epigenetic vs lifestyle)
+- [ ] Implement missing genotype imputation strategies
+- [ ] Add genetic pathway-based feature grouping
+
+## Scientific Requirements
+- SNP call rates >95%, MAF >0.05, HWE p-value >1e-6
+- Linkage disequilibrium pruning (r² >0.8 threshold)
+- Proper handling of X-chromosome and mitochondrial variants
+- Population structure correction using principal components
+- Methylation probe filtering (cross-reactive, polymorphic sites)
+
+## Implementation Notes
+- Use specialized genomics libraries (PyVCF, allel, methylation analysis tools)
+- Implement standard GWAS quality control pipelines
+- Add ancestry estimation and population stratification
+- Create genetic model-aware feature encoding
+- Ensure preprocessing maintains biological interpretation
+
+## Files to Create/Modify
+- `backend/api/ml/genomics_preprocessing.py` (new - specialized genetic preprocessing)
+- `backend/api/data/genetic_qc.py` (new - quality control pipeline)
+- `backend/api/data/population_structure.py` (new - ancestry controls)
+- `backend/api/ml/preprocessor.py` (update - integrate genomics preprocessing)
+
+## Definition of Done
+- Genetic data preprocessing follows genomics best practices
+- Population structure and quality control implemented
+- Feature encoding respects genetic inheritance models
+- Preprocessing maintains biological interpretability
+- Integration with existing ML pipeline maintained
+
+---
+
+### Issue #45: Realistic Model Performance Baselines and Benchmarking
+
+**Labels:** phase-2, ml, high-priority
+
+**Milestone:** Realistic Model Evaluation
+
+## Description
+**CRITICAL FINDING**: Current model performance (R² 0.97, MAE 2 years) is implausibly high for biological aging prediction. Real aging research achieves R² 0.6-0.8 with 4-8 year errors. Need realistic baselines and comparison with published aging clocks.
+
+## Acceptance Criteria
+- [ ] Establish realistic performance targets based on aging research literature
+- [ ] Implement comparison with published aging clocks (Horvath, Hannum, PhenoAge)
+- [ ] Add statistical significance testing for model comparisons
+- [ ] Create age-stratified performance analysis (young vs old predictions)
+- [ ] Implement sex-specific model evaluation
+- [ ] Add confidence intervals and uncertainty quantification
+- [ ] Create learning curves to assess data requirements
+- [ ] Implement cross-validation with proper biological stratification
+- [ ] Add feature importance stability analysis across different data splits
+- [ ] Document expected vs actual performance gaps
+
+## Realistic Performance Targets
+- **Excellent aging predictor**: R² 0.7-0.8, MAE 4-6 years
+- **Good aging predictor**: R² 0.6-0.7, MAE 6-8 years
+- **Research-grade baseline**: R² 0.5-0.6, MAE 8-10 years
+
+## Implementation Notes
+- Use nested cross-validation for proper model selection
+- Implement bootstrap confidence intervals
+- Add permutation tests for statistical significance
+- Create age-group stratified evaluation
+- Compare against simple baselines (age-only models)
+
+## Files to Create/Modify
+- `backend/api/ml/aging_benchmarks.py` (new - literature benchmarks)
+- `backend/api/ml/evaluation.py` (enhance - realistic metrics)
+- `backend/api/ml/statistical_tests.py` (new - significance testing)
+- `notebooks/02_realistic_model_benchmarking.ipynb` (new)
+
+## Definition of Done
+- Model performance targets aligned with aging research reality
+- Statistical significance of model improvements validated
+- Age and sex-specific performance documented
+- Comparison with published aging clocks implemented
+- Performance gaps and limitations clearly documented
+
+---
+
+### Issue #46: Advanced Feature Engineering for Aging Biology
+
+**Labels:** phase-2, ml, high-priority
+
+**Milestone:** Biologically-Informed Features
+
+## Description
+**CRITICAL FINDING**: Current feature engineering ignores known aging biology. Missing gene-environment interactions, pathway-based features, and aging-specific transformations that are critical for realistic aging prediction.
+
+## Acceptance Criteria
+- [ ] Implement aging pathway-based feature grouping (telomere, DNA repair, senescence)
+- [ ] Add gene-environment interaction terms (genetic variants × lifestyle factors)
+- [ ] Create epigenetic clock-inspired feature combinations
+- [ ] Implement non-linear age transformations for biological markers
+- [ ] Add polygenic risk scores for aging-related diseases
+- [ ] Create composite lifestyle scores (Mediterranean diet, exercise patterns)
+- [ ] Implement sex-specific feature engineering
+- [ ] Add temporal feature patterns (age-related changes)
+- [ ] Create aging biomarker ratios and composite indices
+- [ ] Implement feature selection based on aging biology literature
+
+## Biological Features to Add
+- **Telomere Biology**: telomere length interactions with genetic variants
+- **DNA Damage Response**: DNA repair gene variants × environmental exposures  
+- **Cellular Senescence**: senescence pathway genes × oxidative stress markers
+- **Metabolic Aging**: metabolic syndrome components × genetic susceptibility
+- **Inflammatory Aging**: inflammatory markers × lifestyle factors
+
+## Implementation Notes
+- Use biological pathway databases (KEGG, Reactome, GO)
+- Implement literature-based feature combinations
+- Add aging-specific non-linear transformations
+- Create interaction terms based on known biology
+- Ensure feature interpretability for aging research
+
+## Files to Create/Modify
+- `backend/api/ml/aging_features.py` (new - aging-specific feature engineering)
+- `backend/api/ml/pathway_analysis.py` (new - biological pathway features)
+- `backend/api/ml/gene_environment_interactions.py` (new)
+- `backend/api/data/aging_pathways.py` (new - pathway definitions)
+
+## Definition of Done
+- Feature engineering incorporates known aging biology
+- Gene-environment interactions implemented
+- Pathway-based features created and validated
+- Feature interpretability maintained for aging research
+- Literature-based feature combinations implemented
+
+---
+
+### Issue #47: Statistical Rigor and Multiple Testing Correction
+
+**Labels:** phase-2, ml, testing, high-priority
+
+**Milestone:** Scientific Statistical Standards
+
+## Description
+**CRITICAL FINDING**: Current analysis lacks statistical rigor expected in genomics research. Missing multiple testing correction, confidence intervals, and proper hypothesis testing frameworks essential for scientific validity.
+
+## Acceptance Criteria
+- [ ] Implement False Discovery Rate (FDR) correction for multiple testing
+- [ ] Add Bonferroni correction for family-wise error rate control
+- [ ] Implement bootstrap confidence intervals for all metrics
+- [ ] Add permutation tests for feature importance validation
+- [ ] Create power analysis for sample size requirements
+- [ ] Implement proper cross-validation with biological stratification
+- [ ] Add statistical tests for model comparison (McNemar, Wilcoxon)
+- [ ] Create effect size calculations (Cohen's d, Cliff's delta)
+- [ ] Implement stability analysis for feature selection
+- [ ] Add reproducibility metrics and random seed management
+
+## Statistical Tests Required
+- **Multiple Testing**: FDR (Benjamini-Hochberg), Bonferroni, Holm-Sidak
+- **Model Comparison**: Paired t-tests, McNemar test, DeLong test for AUC
+- **Effect Sizes**: Cohen's d for mean differences, Cliff's delta for distributions
+- **Stability**: Jaccard index for feature selection, bootstrap aggregation
+
+## Implementation Notes
+- Use statsmodels for advanced statistical testing
+- Implement proper p-value correction workflows
+- Add confidence interval calculation for all metrics
+- Create reproducible statistical analysis pipelines
+- Document statistical assumptions and validations
+
+## Files to Create/Modify
+- `backend/api/ml/statistical_tests.py` (new - comprehensive statistical testing)
+- `backend/api/ml/multiple_testing.py` (new - p-value corrections)
+- `backend/api/ml/effect_sizes.py` (new - effect size calculations)
+- `backend/api/ml/reproducibility.py` (new - reproducibility metrics)
+
+## Definition of Done
+- Multiple testing correction implemented for all analyses
+- Statistical significance properly calculated and reported
+- Confidence intervals provided for all performance metrics
+- Effect sizes calculated and interpreted
+- Reproducibility and stability metrics implemented
+
+---
+
+### Issue #48: Repository Structure Cleanup and Code Organization
+
+**Labels:** infrastructure, cleanup, medium-priority
+
+**Milestone:** Clean Codebase Foundation
+
+## Description
+**IDENTIFIED NEED**: Repository contains outdated, duplicate, and misplaced files that create confusion and potential for using incorrect code. Need systematic cleanup and proper organization.
+
+## Acceptance Criteria
+- [ ] Audit all Python scripts for data leakage issues and fix or remove
+- [ ] Consolidate duplicate preprocessing functionality
+- [ ] Move misplaced files to appropriate directories
+- [ ] Remove outdated placeholder code and comments
+- [ ] Standardize import patterns and dependency management
+- [ ] Create clear separation between training and inference code
+- [ ] Document file purposes and relationships
+- [ ] Implement consistent naming conventions
+- [ ] Remove unused dependencies and imports
+- [ ] Create proper module structure with `__init__.py` files
+
+## Files to Audit and Clean
+- `backend/api/ml/train.py` (contains data leakage, needs fixing or removal)
+- `backend/api/ml/train_linear.py` (newly fixed, verify consistency)
+- `backend/fastapi_app/` (ensure no duplicate preprocessing logic)
+- All import statements and dependency management
+- Placeholder code and TODO comments
+
+## Implementation Notes
+- Create deprecation plan for outdated scripts
+- Ensure no breaking changes to working functionality
+- Document migration paths for any moved files
+- Test all remaining scripts for data leakage issues
+- Standardize error handling and logging
+
+## Files to Create/Modify
+- Document cleanup in `docs/code_organization.md`
+- Update all import statements affected by moves
+- Remove or fix identified problematic files
+- Update documentation to reflect new structure
+
+## Definition of Done
+- No duplicate or contradictory functionality exists
+- All remaining code follows consistent patterns
+- File organization is logical and well-documented
+- No data leakage issues remain in any scripts
+- Dependencies are clean and minimal
+
+---
+
 ### Issue #2: Validate synthetic data distributions and implement quality checks
 
 **Labels:** phase-1, ml, testing, medium-priority
