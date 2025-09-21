@@ -1,6 +1,32 @@
-# GitHub Issues for Anti-Aging ML App Development Plan
+# Complete GitHub Issues for Anti-Aging ML App Development
 
-This document contains all GitHub issues derived from DEV_PLAN.md.
+**Last Updated:** September 21, 2025  
+**Status:** Critical issues #43-48 must be addressed before resuming original development plan
+
+This document contains all GitHub issues derived from the comprehensive development plan, including the critical scientific validity issues identified during September 21, 2025 analysis.
+
+## 🚨 CRITICAL PRIORITY ISSUES (Must Complete First)
+
+### **Issues #43-48: Scientific Validity Fixes**
+These issues were created after comprehensive analysis revealed fundamental problems with synthetic data and model validation. **ALL DEVELOPMENT MUST PAUSE** until these are resolved.
+
+**Quick Reference - Critical Issues Priority Order:**
+1. **Issue #43:** 🔥 **URGENT** Synthetic Data Realism Overhaul - Fix Age Correlation
+2. **Issue #44:** Genomics-Specific Data Quality and Preprocessing  
+3. **Issue #45:** Realistic Model Performance Baselines and Benchmarking
+4. **Issue #46:** Advanced Feature Engineering for Aging Biology
+5. **Issue #47:** Statistical Rigor and Multiple Testing Correction
+6. **Issue #48:** Repository Structure Cleanup and Code Organization ✅ IN PROGRESS
+
+## Original Development Plan
+
+**Post-Critical-Fixes Development Order:**
+- **Phase 1**: Issues #1-2 (Data) ✅ COMPLETE
+- **Phase 2**: Issues #3-8, #21, #42 (Backend + ML) - Resume after critical fixes
+- **Phase 3**: Issues #9-11 (Frontend + Integration)
+- **Phase 4**: Issues #12-14 (Docker, Testing, Validation)  
+- **Phase 5**: Issues #15-17 (Thesis + Demo)
+- **Backlog**: Issues #18-20 (Future enhancements)
 
 ## Milestones
 

@@ -883,17 +883,15 @@ pie title Progresso Geral do Projeto
 Este README é complementado por documentação detalhada na pasta `docs/`:
 
 #### **📝 Documentação Técnica:**
-- **[DEV_PLAN.md](../docs/DEV_PLAN.md)** - Plano de desenvolvimento completo e autoritative roadmap
-- **[GITHUB_ISSUES.md](../docs/GITHUB_ISSUES.md)** - 20 issues actionable do GitHub com critérios de aceitação
-- **[DETAILED_ISSUES.md](../docs/DETAILED_ISSUES.md)** - Descrições completas de todas as issues com guidance de implementação
-- **[IMPLEMENTATION_SUMMARY.md](../docs/IMPLEMENTATION_SUMMARY.md)** - Sumário de conversão DEV_PLAN → GitHub Issues
+- **[docs/ROADMAP.md](../docs/ROADMAP.md)** - Plano de desenvolvimento consolidado e authoritative roadmap
+- **[docs/DETAILED_ISSUES.md](../docs/DETAILED_ISSUES.md)** - Especificações completas de todas as issues com guidance de implementação
+- **[docs/CHANGELOG.md](../docs/CHANGELOG.md)** - Log detalhado de todas as implementações e progress updates
 
 #### **📈 Progresso e Status:**
-- **[CHANGELOG.md](../docs/CHANGELOG.md)** - Log detalhado de todas as implementações e progress updates
-- **Progress Tracking:** Issues #1-20 mapeiam diretamente para marcos do projeto
+- **Progress Tracking:** Issues #1-48 mapeiam diretamente para marcos do projeto e questões críticas
 
 #### **🎓 Orientação Acadêmica:**
-- **[FABRICIO_TIPS.md](../docs/FABRICIO_TIPS.md)** - Orientações específicas do Prof. Fabrício sobre baseline testing
+- **[docs/ROADMAP.md](../docs/ROADMAP.md)** - Inclui orientações específicas do Prof. Fabrício sobre baseline testing
 - **[ARTICLE.md](../docs/ARTICLE.md)** - Draft do artigo científico (metodologia e fundamentação teórica)
 
 #### **🔄 Transparência de Desenvolvimento:**
