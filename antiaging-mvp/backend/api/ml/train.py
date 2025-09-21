@@ -1,9 +1,9 @@
 """
-Random Forest Model Trainer for Anti-Aging ML Application
+Model Training Utility for Anti-Aging ML Application
 
-This module provides training functionality for Random Forest models.
-It implements proper data splitting to prevent data leakage and includes
-ONNX export capabilities for production deployment.
+This module provides training functionality for machine learning models, with current support for Random Forests.
+It implements proper data splitting to prevent data leakage and includes ONNX export capabilities for production deployment.
+The design allows for easy extension to support additional model types in the future.
 
 Usage:
     trainer = ModelTrainer()
