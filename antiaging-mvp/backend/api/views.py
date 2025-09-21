@@ -1,4 +1,9 @@
-#PLACEHOLDER CODE #1
+"""
+Django REST Framework Views
+
+Provides API views and endpoints for the Django application.
+"""
+
 from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response

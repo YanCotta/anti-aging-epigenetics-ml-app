@@ -1,4 +1,10 @@
-#PLACEHOLDER CODE #1
+"""
+Prediction Module for Anti-Aging ML Application
+
+Provides functionality for loading trained models and making predictions
+on user data with explanations using SHAP.
+"""
+
 import numpy as np
 import pandas as pd
 import onnxruntime as ort

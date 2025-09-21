@@ -1,6 +1,8 @@
-# GitHub Issues for Anti-Aging ML App Development Plan
+# GitHub Issues Overview
 
-This document contains actionable GitHub issues derived from the comprehensive development plan in `DEV_PLAN.md`. Each issue is designed to be specific, measurable, and achievable, with clear acceptance criteria and implementation guidance.
+> **📍 DOCUMENTATION NOTICE**: This document has been superseded by [DETAILED_ISSUES.md](DETAILED_ISSUES.md) as of September 21, 2025. Please refer to DETAILED_ISSUES.md for complete issue specifications and ROADMAP.md for current development status.
+
+This document provides an organized overview of GitHub issues for the Anti-Aging ML App development.
 
 ## Quick Reference - Linear Development Order
 

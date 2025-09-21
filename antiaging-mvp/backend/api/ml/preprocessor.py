@@ -1,4 +1,11 @@
-#PLACEHOLDER CODE #1
+"""
+Data Preprocessing Pipeline for Anti-Aging ML Model
+
+This module provides comprehensive data preprocessing functionality including
+missing value imputation, categorical encoding, and numerical scaling.
+Designed to prevent data leakage by fitting only on training data.
+"""
+
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder
@@ -193,21 +200,3 @@ def extract_genetic_features(raw_genetic_data):
     }
     
     return features
-
-#PLACEHOLDER CODE #2
-"""
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.compose import ColumnTransformer
-import pandas as pd
-
-def get_preprocessor(X: pd.DataFrame):
-    cat_cols = [col for col in X.columns if X[col].dtype == 'object' and col != 'risk']  # Genotypes, gender
-    num_cols = [col for col in X.columns if X[col].dtype in ['int64', 'float64'] and col != 'risk']
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), cat_cols),
-            ('num', StandardScaler(), num_cols)
-        ]
-    )
-    return preprocessor
-"""
