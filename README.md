@@ -50,33 +50,30 @@ Product of my undergraduate thesis in Biological Sciences (BS) - An anti-aging e
 
 ## Development Plan
 
-See the finalized roadmap in `DEV_PLAN.md`.
+See the comprehensive development plan in **[docs/ROADMAP.md](docs/ROADMAP.md)**.
 
-**🚀 Ready for Implementation:**
-- **`GITHUB_ISSUES.md`** - 20 actionable GitHub issues with implementation strategy
-- **`DETAILED_ISSUES.md`** - Complete issue descriptions with acceptance criteria  
-- **`github_issues.json`** - Import-ready format for GitHub API/manual creation
-- **`DEV_PLAN.md`** - Original comprehensive development plan and context
+**🚀 Implementation Ready:**
+- **[docs/DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)** - Complete issue descriptions with acceptance criteria
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** - Architecture, timeline, and development strategy
 
 ### Quick Start
 
 **Current Implementation Status:**
 1. ✅ **Phase 1 Complete**: Synthetic datasets generated and validated
 2. ✅ **Authentication**: JWT system fully implemented and tested
-3. 🛠 **Phase 2 In Progress**: Data upload endpoints being enhanced
+3. 🛠 **Phase 2 In Progress**: Critical scientific validity issues being addressed
 
 **To Continue Development:**
-1. Review implementation progress in [CHANGELOG.md](docs/CHANGELOG.md)
-2. Check issue status in [IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)
-3. Import remaining GitHub issues from [DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)
-4. Continue with Phase 2 data validation (Issue #4) and ML pipeline (Issues #5-8)
-5. Follow the 5-phase timeline for systematic MVP development
+1. Review current status and critical issues in [docs/ROADMAP.md](docs/ROADMAP.md)
+2. Check detailed implementation progress in [docs/CHANGELOG.md](docs/CHANGELOG.md)
+3. Address critical Issues #43-47 before resuming development
+4. Follow comprehensive task specifications in [docs/DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)
 
-**Documentation Structure:**
-- **[CHANGELOG.md](docs/CHANGELOG.md)** - Detailed progress tracking with evidence
-- **[IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - 20 GitHub issues breakdown  
-- **[DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)** - Complete issue descriptions with acceptance criteria
-- **[DEV_PLAN.md](docs/DEV_PLAN.md)** - Original comprehensive development plan
+**📖 Complete Documentation:**
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** - Comprehensive development plan, architecture, and current status
+- **[docs/DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)** - All technical tasks and implementation specifications
+- **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Complete implementation history and session logs
+- **[docs/DOCUMENTATION_ORGANIZATION.md](docs/DOCUMENTATION_ORGANIZATION.md)** - Navigation guide and structure overview
 
 ## Architecture (implemented)
 
@@ -130,7 +127,7 @@ See the finalized roadmap in `DEV_PLAN.md`.
 ### Phase 3: Frontend + Integration ⏳ PLANNED
 
 - [⏳] Streamlit MVP integrated end-to-end (auth, upload, habits, predict)
-- [x] ✅ Document Next.js/React migration plan in `DEV_PLAN.md`
+- [x] ✅ Document Next.js/React migration plan in `docs/ROADMAP.md`
 
 ### Phase 4: Docker, Testing, Validation ⏳ PLANNED
 
