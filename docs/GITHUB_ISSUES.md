@@ -2,6 +2,84 @@
 
 This document contains actionable GitHub issues derived from the comprehensive development plan in `DEV_PLAN.md`. Each issue is designed to be specific, measurable, and achievable, with clear acceptance criteria and implementation guidance.
 
+## Quick Reference - Linear Development Order
+
+For systematic development, follow these issues in order:
+
+### **🚨 CRITICAL PRIORITY - Address Before Original Roadmap**
+1. **Issue #43:** 🔥 **URGENT** Synthetic Data Realism Overhaul - Fix Age Correlation (Critical) ⏳ **MUST FIX FIRST**
+2. **Issue #44:** Genomics-Specific Data Quality and Preprocessing (High Priority) 
+3. **Issue #45:** Realistic Model Performance Baselines and Benchmarking (High Priority)
+4. **Issue #46:** Advanced Feature Engineering for Aging Biology (High Priority)
+5. **Issue #47:** Statistical Rigor and Multiple Testing Correction (High Priority)
+6. **Issue #48:** Repository Structure Cleanup and Code Organization (Medium Priority)
+
+### Phase 1: Setup + Data (Revised)
+7. **Issue #1:** Scale synthetic dataset (Phase 1) ✅ COMPLETE
+8. **Issue #2:** Data validation pipeline (Phase 1) ✅ COMPLETE
+
+### Phase 2: Backend + ML (After Critical Fixes)
+9. **Issue #3:** FastAPI authentication (Phase 2) ✅ COMPLETE
+10. **Issue #4:** Data upload endpoints (Phase 2) ✅ COMPLETE
+11. **Issue #21:** Linear Regression baseline + MLFlow (Phase 2) ✅ COMPLETE
+12. **Issue #42:** Multivariate statistical analysis for feature groupings (Phase 2) 🔄 CURRENT
+13. **Issue #5:** ML preprocessing pipeline (Phase 2)
+14. **Issue #6:** Random Forest training (Phase 2)
+15. **Issue #7:** MLP neural network (Phase 2)
+16. **Issue #8:** Prediction endpoint (Phase 2)
+
+### Phase 3: Frontend + Integration
+17. **Issue #9:** Streamlit MVP (Phase 3)
+18. **Issue #10:** React migration planning (Phase 3)
+19. **Issue #11:** End-to-end integration testing (Phase 3)
+
+### Phase 4: Docker, Testing, Validation
+20. **Issue #12:** Docker infrastructure (Phase 4)
+21. **Issue #13:** Testing suite (Phase 4)
+22. **Issue #14:** Performance optimization (Phase 4)
+
+### Phase 5: Thesis + Demo
+23. **Issue #15:** MLFlow analysis (Phase 5)
+24. **Issue #16:** Ethics documentation (Phase 5)
+25. **Issue #17:** Demo preparation (Phase 5)
+
+### Backlog
+26. **Issue #18:** Django to SQLAlchemy migration
+27. **Issue #19:** Advanced CSV validation
+28. **Issue #20:** Enhanced model explanations
+
+### 🚨 **CRITICAL FINDINGS from Notebook Analysis**
+
+Our comprehensive skeptical analysis revealed **fundamental issues** that invalidate current results:
+
+1. **🔴 Unrealistic Age Correlation (0.945)**: Current synthetic data has implausibly high age-biological age correlation. Real aging research shows 0.6-0.8 maximum. This makes all model results artificially optimistic.
+
+2. **🔴 Implausible Model Performance**: Current R² ~0.97 and MAE ~2 years is unprecedented for biological aging prediction. Real aging clocks achieve R² 0.6-0.8 with 4-8 year errors.
+
+3. **🔴 Missing Genomics Best Practices**: Genetic data preprocessing ignores population genetics, Hardy-Weinberg equilibrium, linkage disequilibrium, and proper genetic models.
+
+4. **🔴 Lack of Statistical Rigor**: Missing multiple testing correction, confidence intervals, and proper hypothesis testing essential for genomics research.
+
+5. **🔴 Unrealistic Feature Engineering**: Ignores gene-environment interactions, aging pathways, and established aging biology patterns.
+
+### **⚠️ Action Required Before Continuing**
+
+**ALL DEVELOPMENT MUST PAUSE** until Issues #43-47 are addressed. Current results are scientifically implausible and would not be acceptable in peer review or thesis defense. The synthetic data generator needs major revision to create realistic biological complexity.
+
+### **Expected Changes After Fixes**
+- Model performance will drop to realistic levels (R² 0.6-0.8, MAE 4-8 years)
+- Feature importance patterns will become more biologically plausible  
+- Model comparisons will show meaningful differences
+- Results will be defendable in academic/scientific contexts
+
+### Pivot: Baseline Linear Regression First
+
+To ensure a rigorous comparison across models, we've introduced Issue #21 to train a Linear Regression baseline immediately after Issue #4. All subsequent models (RF, MLP) must be logged to MLFlow under a shared experiment name to enable side-by-side comparison (metrics: RMSE, R², MAE; artifacts: model + preprocessor). This pivots the sequence but keeps Phase 2 scope intact.
+
+### Addition: Multivariate Statistical Analysis
+
+Issue #42 adds clustering/grouping analysis and canonical correlation analysis to discover colinear relationships between variables. The hypothesis is that feature groups (genetic, lifestyle, demographic, health markers, environmental) have different weights and impacts on model performance based on their relationships. This analysis will inform group-aware preprocessing and feature engineering for improved model performance.lementation guidance.
+
 ## Overview
 
 **Total Issues:** 20 issues across 5 phases + backlog items  
