@@ -84,20 +84,22 @@ def train_linear_regression(
     X = df.drop(columns=[TARGET_COL] + [c for c in DROP_FEATURES if c in df.columns])
     y = df[TARGET_COL]
 
-    # Preprocess (fit on train only)
-    pre = DataPreprocessor()
-    X_processed = pre.fit_transform(X)
-
+    # CRITICAL FIX: Split data FIRST, then preprocess to prevent data leakage
     X_train, X_test, y_train, y_test = train_test_split(
-        X_processed, y, test_size=test_size, random_state=random_state
+        X, y, test_size=test_size, random_state=random_state
     )
+
+    # Preprocess (fit ONLY on training data to prevent leakage)
+    pre = DataPreprocessor()
+    X_train_processed = pre.fit_transform(X_train)
+    X_test_processed = pre.transform(X_test)  # Only transform, don't fit!
 
     # Train model
     model = LinearRegression()
-    model.fit(X_train, y_train)
+    model.fit(X_train_processed, y_train)
 
     # Evaluate
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(X_test_processed)
     mse = mean_squared_error(y_test, y_pred)
     rmse = float(np.sqrt(mse))
     mae = float(mean_absolute_error(y_test, y_pred))
@@ -127,7 +129,7 @@ def train_linear_regression(
             "fit_intercept": getattr(model, "fit_intercept", True),
             "copy_X": getattr(model, "copy_X", True),
             "positive": getattr(model, "positive", False),
-            "n_features": X_processed.shape[1],
+            "n_features": X_train_processed.shape[1],
             "test_size": test_size,
             "random_state": random_state,
         })
@@ -145,7 +147,7 @@ def train_linear_regression(
         "mae": mae,
         "model_path": str(model_path),
         "preprocessor_path": str(preproc_path),
-        "n_features": X_processed.shape[1],
+        "n_features": X_train_processed.shape[1],
     }
 
 
