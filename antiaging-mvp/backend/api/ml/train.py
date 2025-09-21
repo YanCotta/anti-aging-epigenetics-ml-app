@@ -23,7 +23,7 @@ class ModelTrainer:
         self.feature_names = []
         
     def train(self, data_path=None, test_size=0.2, tune_hyperparameters=True):
-        """Train the aging prediction model"""
+        """Train the aging prediction model - FIXED: No data leakage"""
         
         # Load or generate data
         if data_path and os.path.exists(data_path):
@@ -37,18 +37,20 @@ class ModelTrainer:
         X = data.drop(columns=[target_col])
         y = data[target_col]
         
-        # Preprocess features
-        X_processed = self.preprocessor.fit_transform(X)
-        self.feature_names = X_processed.columns.tolist()
-        
-        # Split data
+        # CRITICAL FIX: Split data FIRST, then preprocess to prevent data leakage
         X_train, X_test, y_train, y_test = train_test_split(
-            X_processed, y, test_size=test_size, random_state=42
+            X, y, test_size=test_size, random_state=42
         )
+        
+        # Preprocess features (fit ONLY on training data)
+        self.preprocessor = DataPreprocessor()
+        X_train_processed = self.preprocessor.fit_transform(X_train)
+        X_test_processed = self.preprocessor.transform(X_test)  # Only transform, don't fit!
+        self.feature_names = X_train_processed.columns.tolist()
         
         # Train model
         if tune_hyperparameters:
-            self.model = self._tune_hyperparameters(X_train, y_train)
+            self.model = self._tune_hyperparameters(X_train_processed, y_train)
         else:
             self.model = RandomForestRegressor(
                 n_estimators=100,
@@ -56,13 +58,13 @@ class ModelTrainer:
                 random_state=42,
                 n_jobs=-1
             )
-            self.model.fit(X_train, y_train)
+            self.model.fit(X_train_processed, y_train)
         
         # Evaluate model
-        train_score = self.model.score(X_train, y_train)
-        test_score = self.model.score(X_test, y_test)
+        train_score = self.model.score(X_train_processed, y_train)
+        test_score = self.model.score(X_test_processed, y_test)
         
-        y_pred = self.model.predict(X_test)
+        y_pred = self.model.predict(X_test_processed)
         mae = mean_absolute_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
         
