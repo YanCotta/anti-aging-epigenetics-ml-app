@@ -1,0 +1,149 @@
+{
+  "pipeline_config": {
+    "min_call_rate": 0.95,
+    "min_maf": 0.01,
+    "hwe_threshold": 1e-06,
+    "models_trained": [
+      "linear",
+      "random_forest"
+    ]
+  },
+  "data_summary": {
+    "final_shape": [
+      5000,
+      106
+    ],
+    "feature_groups": {
+      "snp": 10,
+      "snp_dosage": 10,
+      "methylation": 20,
+      "lifestyle": 6,
+      "demographic": 4,
+      "health": 5,
+      "environmental": 3,
+      "categorical": 1,
+      "genetic_risk_scores": 3,
+      "methylation_derived": 3,
+      "interactions": 15,
+      "pathway_scores": 2
+    }
+  },
+  "quality_control": {
+    "input_stats": {
+      "n_samples": 5000,
+      "n_snps": 10,
+      "n_snp_dosages": 10
+    },
+    "sample_qc": {
+      "total_samples": 5000,
+      "failed_samples": 3,
+      "mean_call_rate": 1.0,
+      "mean_heterozygosity": 0.3562
+    },
+    "snp_qc": {
+      "total_snps": 10,
+      "failed_snps": 0,
+      "mean_call_rate": 1.0,
+      "mean_maf": 0.25932,
+      "snps_failing_hwe": 0
+    },
+    "population_structure": {
+      "related_pairs": 2130303,
+      "max_kinship": 2.6
+    },
+    "failed_snps": [],
+    "failed_samples": [
+      "user_003042",
+      "user_004862",
+      "user_004934"
+    ],
+    "recommendations": [
+      "Remove 3 samples failing QC",
+      "Found 2130303 related sample pairs - consider removing duplicates"
+    ]
+  },
+  "model_performances": {
+    "linear": {
+      "mse": 99.90841069431767,
+      "mae": 8.205277735049773,
+      "r2": 0.5393808745348571,
+      "cv_score": 0.5440690791979413
+    },
+    "random_forest": {
+      "mse": 106.77863453415999,
+      "mae": 8.493802399999998,
+      "r2": 0.5077062990425063,
+      "cv_score": 0.5215828191632546
+    }
+  },
+  "top_features": {
+    "linear": [
+      "age_acceleration",
+      "age",
+      "telomere_length",
+      "smoking",
+      "methylation_variance",
+      "sleep_hours",
+      "bmi",
+      "genetic_aging_rate",
+      "stress_level",
+      "SIRT1_rs7069102_dosage_x_stress_level"
+    ],
+    "random_forest": [
+      "age_acceleration",
+      "telomere_length",
+      "bmi",
+      "smoking",
+      "genetic_aging_rate",
+      "weight",
+      "cg06126421_methylation",
+      "cg09809672_methylation",
+      "cg17760862_methylation",
+      "cg25410668_methylation"
+    ]
+  },
+  "biological_insights": {
+    "aging_pathways_identified": [
+      "inflammation_pathway_score",
+      "metabolic_pathway_score"
+    ],
+    "key_genetic_variants": [
+      "APOE_rs429358",
+      "APOE_rs429358_dosage",
+      "APOE_rs7412",
+      "APOE_rs7412_dosage",
+      "FOXO3_rs2802292",
+      "FOXO3_rs2802292_dosage",
+      "SIRT1_rs7069102",
+      "SIRT1_rs7069102_dosage",
+      "TP53_rs1042522",
+      "TP53_rs1042522_dosage",
+      "APOE_rs429358_encoded",
+      "APOE_rs7412_encoded",
+      "FOXO3_rs2802292_encoded",
+      "SIRT1_rs7069102_encoded",
+      "TP53_rs1042522_encoded",
+      "APOE_rs429358_dosage_x_exercise_frequency",
+      "APOE_rs429358_dosage_x_sleep_hours",
+      "APOE_rs429358_dosage_x_stress_level",
+      "APOE_rs7412_dosage_x_exercise_frequency",
+      "APOE_rs7412_dosage_x_sleep_hours",
+      "APOE_rs7412_dosage_x_stress_level",
+      "FOXO3_rs2802292_dosage_x_exercise_frequency",
+      "FOXO3_rs2802292_dosage_x_sleep_hours",
+      "FOXO3_rs2802292_dosage_x_stress_level",
+      "SIRT1_rs7069102_dosage_x_exercise_frequency",
+      "SIRT1_rs7069102_dosage_x_sleep_hours",
+      "SIRT1_rs7069102_dosage_x_stress_level",
+      "TP53_rs1042522_dosage_x_exercise_frequency",
+      "TP53_rs1042522_dosage_x_sleep_hours",
+      "TP53_rs1042522_dosage_x_stress_level"
+    ],
+    "methylation_importance": 10.441095859618027,
+    "lifestyle_factors": [
+      "exercise_frequency",
+      "sleep_hours",
+      "diet_quality"
+    ]
+  }
+}
