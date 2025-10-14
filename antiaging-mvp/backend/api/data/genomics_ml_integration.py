@@ -70,6 +70,16 @@ except ImportError:
             return {'input_stats': {'n_samples': len(df), 'n_snps': len(snp_cols)},
                     'sample_qc': {'failed_samples': 0}, 'snp_qc': {'failed_snps': 0}}
 
+# Import advanced feature engineering
+import sys
+sys.path.append('/home/yan/Documents/Git/anti-aging-epigenetics-ml-app/antiaging-mvp/backend/api/ml')
+try:
+    from aging_features import AdvancedAgingFeatureEngineer
+    ADVANCED_FEATURES_AVAILABLE = True
+except ImportError:
+    ADVANCED_FEATURES_AVAILABLE = False
+    print("Warning: Advanced feature engineering not available")
+
 
 @dataclass
 class GenomicsMLConfig:
@@ -107,12 +117,13 @@ class GenomicsMLPipeline:
     and ML model training for anti-aging prediction.
     """
     
-    def __init__(self, config: GenomicsMLConfig = None):
+    def __init__(self, config: GenomicsMLConfig = None, use_advanced_features: bool = True):
         """
         Initialize the genomics-ML pipeline.
         
         Args:
             config: Configuration object for the pipeline
+            use_advanced_features: Whether to use advanced feature engineering from Issue #46
         """
         self.config = config or GenomicsMLConfig()
         self.genomics_preprocessor = GenomicsPreprocessor()
@@ -121,6 +132,16 @@ class GenomicsMLPipeline:
             min_maf=self.config.min_maf,
             hwe_threshold=self.config.hwe_threshold
         )
+        
+        # Advanced feature engineering (Issue #46)
+        self.use_advanced_features = use_advanced_features and ADVANCED_FEATURES_AVAILABLE
+        if self.use_advanced_features:
+            self.feature_engineer = AdvancedAgingFeatureEngineer(
+                create_interactions=True,
+                include_polynomial=False
+            )
+        else:
+            self.feature_engineer = None
         
         self.logger = self._setup_logger()
         
@@ -209,6 +230,8 @@ class GenomicsMLPipeline:
         """
         Engineer advanced features for aging biology.
         
+        Uses both legacy feature engineering and new advanced features (Issue #46).
+        
         Returns:
             Dataset with engineered features
         """
@@ -218,23 +241,33 @@ class GenomicsMLPipeline:
         self.logger.info("Engineering aging-specific features...")
         
         df = self.processed_data.copy()
+        initial_shape = df.shape
         
-        # 1. Genetic Risk Scores
-        if self.config.calculate_genetic_risk_scores:
-            df = self._calculate_genetic_risk_scores(df)
-        
-        # 2. Methylation Clock Features
-        df = self._create_methylation_clock_features(df)
-        
-        # 3. Gene-Environment Interactions
-        if self.config.create_interaction_terms:
-            df = self._create_interaction_terms(df)
-        
-        # 4. Pathway-based Features
-        df = self._create_pathway_features(df)
+        # Use advanced feature engineering if available (Issue #46)
+        if self.use_advanced_features and self.feature_engineer:
+            self.logger.info("Using advanced aging feature engineering (Issue #46)...")
+            df = self.feature_engineer.engineer_features(df)
+            self.logger.info(f"Advanced features: {initial_shape[1]} → {df.shape[1]} features")
+        else:
+            # Fallback to legacy feature engineering
+            self.logger.info("Using legacy feature engineering...")
+            
+            # 1. Genetic Risk Scores
+            if self.config.calculate_genetic_risk_scores:
+                df = self._calculate_genetic_risk_scores(df)
+            
+            # 2. Methylation Clock Features
+            df = self._create_methylation_clock_features(df)
+            
+            # 3. Gene-Environment Interactions
+            if self.config.create_interaction_terms:
+                df = self._create_interaction_terms(df)
+            
+            # 4. Pathway-based Features
+            df = self._create_pathway_features(df)
         
         self.processed_data = df
-        self.logger.info(f"Feature engineering completed. Final shape: {df.shape}")
+        self.logger.info(f"Feature engineering completed. Final shape: {initial_shape} → {df.shape}")
         
         return df
     
