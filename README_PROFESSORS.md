@@ -22,9 +22,17 @@ Este projeto desenvolve um sistema computacional de medicina personalizada que i
 
 **⚠️ IMPORTANTE - STATUS DE DESENVOLVIMENTO:**
 - **Projeto em desenvolvimento ativo** sob orientação do Prof. Dr. Fabrício e Profa. Dra. Letícia
-- **MVP atual:** Pipeline científico completo com validação estatística rigorosa (Fase 2 de 5)
-- **Roadmap expandido:** Implementação de múltiplos paradigmas de ML/DL
+- **Novo foco (16/out/2025):** Inserir incerteza, caos e aleatoriedade em todos os níveis da geração e da análise dos dados sintéticos
+- **MVP anterior:** Pipeline com validação estatística rigorosa (Fase 2 de 5) — agora tratado como linha de base histórica
+- **Roadmap expandido:** Implementação de múltiplos paradigmas de ML/DL com métricas de incerteza, entropia e covariância
 - **Sistema final:** Arquitetura multi-agentes com LLM integrado
+
+### 🔄 Atualização Estratégica – 16 de Outubro de 2025
+
+- **Interações desconhecidas:** simular relações caóticas entre sítios de metilação, SNPs, hábitos, marcadores clínicos e variáveis ambientais.
+- **Incerteza entre faixas etárias:** permitir trajetórias improváveis (ex.: estilos de vida ruins que ainda resultam em longevidade elevada) para testar a resiliência dos modelos.
+- **Diagnósticos estatísticos ampliados:** incorporar distribuição de resíduos, envelopes de variância, matrizes de covariância dinâmicas, entropia de importância de features e índices de resiliência por coorte.
+- **Recalibração obrigatória:** todos os resultados publicados até 14/out/2025 serão reavaliados com simulações Monte Carlo para definição de novos intervalos de confiança.
 
 **Status Atual:** 
 - ✅ Datasets sintéticos biologically realistic (correlação 0.657)
