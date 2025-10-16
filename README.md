@@ -2,20 +2,19 @@
 
 Product of my undergraduate thesis in Biological Sciences (BS) - A scientifically rigorous anti-aging epigenetics machine learning application capable of making personalized health recommendations and predictions based on individual genetic data and environmental factors.
 
-## 🎉 Current Status: Publication-Ready Pipeline Achieved ✅
+## 🔄 Current Status: Strategic Pivot to Uncertainty Integration
 
-**Major Achievement**: Successfully completed 5 critical issues (#43-47) including scientific data generation, comprehensive genomics preprocessing, literature benchmarking, advanced feature engineering, and full statistical rigor.
+We are executing a **professor-driven pivot** to inject explicit uncertainty, chaos, and stochastic interactions across the entire synthetic genomics pipeline. The goal is to simulate the unknown relationships between methylation sites, SNPs, lifestyle factors, environmental variables, and cohort assignments so that our models learn to cope with realistic ambiguity rather than perfectly clean data.
 
-**Pipeline Performance** (with 95% Bootstrap CI):
-- **Test R²**: 0.963 [0.960, 0.967]
-- **Test MAE**: 2.41 [2.29, 2.53] years  
-- **CV R²**: 0.960 ± 0.002 (5-fold stratified)
-- **Performance Category**: EXCELLENT (exceeds published aging clocks)
-- **Statistical Validation**: Bootstrap CIs, permutation tests, FDR correction
+### Guidance Recap (October 16, 2025)
+- Randomize and perturb interactions between every feature family (methylation ↔ SNP ↔ lifestyle ↔ biomarkers) to represent unknown regulatory mechanisms.
+- Introduce cross-age uncertainty so outliers (e.g., unhealthy 20-year-olds who age well, resilient elderly cohorts) emerge naturally.
+- Expand statistical diagnostics beyond point metrics: covariance drift, variance envelopes, residual distributions, entropy of feature importance, and cohort fairness summaries.
+- Re-baseline all performance claims after Monte Carlo evaluations; treat previous EXCELLENT metrics as historical upper bounds only.
 
-**Critical Acknowledgment**: Results represent upper bound due to clean synthetic data. Real-world performance expected to be lower due to biological noise, batch effects, and population heterogeneity.
+See [CHANGELOG.md](docs/CHANGELOG.md) for the full pivot log and [ROADMAP.md](docs/ROADMAP.md) for the updated execution plan.
 
-**See [CHANGELOG.md](docs/CHANGELOG.md) for complete breakthrough details and [ROADMAP.md](docs/ROADMAP.md) for next steps.**
+> ℹ️ **Historical Baseline:** Sections below capture the publication-ready pipeline delivered on October 14, 2025. Treat all metrics as pre-chaos references until Monte Carlo uncertainty runs establish new confidence bands.
 
 ## 📋 Quick Links
 
