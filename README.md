@@ -16,12 +16,20 @@ See [CHANGELOG.md](docs/CHANGELOG.md) for the full pivot log and [ROADMAP.md](do
 
 > ℹ️ **Historical Baseline:** Sections below capture the publication-ready pipeline delivered on October 14, 2025. Treat all metrics as pre-chaos references until Monte Carlo uncertainty runs establish new confidence bands.
 
-## 📋 Quick Links
+## 📋 Documentation Navigator
 
-- **🎯 Latest Achievements**: [CHANGELOG.md](docs/CHANGELOG.md)
-- **📍 Roadmap & Next Steps**: [ROADMAP.md](docs/ROADMAP.md)
-- **📋 Detailed Issues**: [DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md)
-- **🎓 Academic Overview**: [README_PROFESSORS.md](README_PROFESSORS.md)
+🗂️ **[Complete Documentation Index](docs/INDEX.md)** - Master guide to all documentation
+
+### Quick Links
+
+- **🎯 Latest Updates**: [CHANGELOG.md](docs/CHANGELOG.md) - What's been done
+- **📍 Development Plan**: [ROADMAP.md](docs/ROADMAP.md) - Current status & roadmap  
+- **📋 Active Tasks**: [DETAILED_ISSUES.md](docs/DETAILED_ISSUES.md) - Issues #49-53 (Active)
+- **🔬 Latest Analysis**: [Baseline Notebook Analysis](docs/BASELINE_NOTEBOOK_ANALYSIS_OCT_16_2025.md) - Oct 16 results
+- **📊 Statistical Results**: [Statistical Validation Summary](docs/STATISTICAL_VALIDATION_SUMMARY.md) - Historical baseline
+- **🎓 Academic Overview**: [README_PROFESSORS.md](README_PROFESSORS.md) - Thesis presentation
+
+> **New to this project?** Start with the [Documentation Index](docs/INDEX.md) for guided navigation.
 
 ## 🔬 Core Python Pipeline Components
 

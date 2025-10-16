@@ -3,6 +3,11 @@
 **Last Updated:** October 16, 2025  
 **Current Status:** 🔄 Strategic Pivot – Multi-Level Uncertainty & Chaos Integration
 
+---
+
+> 📖 **NAVIGATION:** This is the authoritative development plan. For complete documentation structure, see [INDEX.md](INDEX.md).  
+> **Use this document for:** Development strategy, system architecture, project status, and implementation roadmap.
+
 ## 🔄 STRATEGIC PIVOT – UNCERTAINTY-FIRST EXECUTION (October 2025)
 
 ### **✅ Major Milestone Achieved (October 16, 2025)**

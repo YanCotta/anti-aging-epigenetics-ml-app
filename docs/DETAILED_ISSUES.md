@@ -3,6 +3,13 @@
 **Last Updated:** October 16, 2025  
 **Status:** 🔄 Strategic Pivot In Progress – Uncertainty Integration (Issues #49-#53)
 
+---
+
+> 📖 **NAVIGATION:** This is the complete task specifications document. For overview, see [INDEX.md](INDEX.md) or [ROADMAP.md](ROADMAP.md).  
+> **Use this document for:** Detailed acceptance criteria, implementation notes, file modifications, and task dependencies.
+
+---
+
 This document contains all GitHub issues derived from the comprehensive development plan. As of October 16, 2025 we are executing a professor-directed pivot to embed stochasticity, chaos, and uncertainty across every layer of the synthetic genomics pipeline. The publication-ready work completed on October 14, 2025 remains documented as the historical baseline while the new Issue cluster (#49-#53) drives the uncertainty initiative.
 
 ## 🔄 NEW ISSUE CLUSTER – UNCERTAINTY & CHAOS INTEGRATION (October 16, 2025)
