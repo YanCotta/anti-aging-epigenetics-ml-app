@@ -428,3 +428,8 @@ models/
 *.pkl
 *.joblib
 *.onnx
+
+# Python virtual environment
+.venv/
+venv/
+env/
