@@ -9,21 +9,62 @@ This document contains all GitHub issues derived from the comprehensive developm
 
 ### Issue #49: Multi-Layer Chaos Injection Engine
 **Labels:** phase-2, ml, high-priority  
-**Milestone:** Immediate Pivot Execution
+**Milestone:** Immediate Pivot Execution  
+**Status:** 🔴 **READY TO START** - Quantitative targets established from baseline analysis
 
 **Description:** Design and implement stochastic perturbations that inject uncertainty into feature-level values, cross-feature interactions, and age-bucket assignments. The generator must support reproducible chaos (seed control) while preventing models from relying on single, deterministic relationships between methylation sites, SNPs, lifestyle factors, and biomarkers.
 
+**Quantitative Targets from Baseline Analysis (October 16, 2025)**:
+- ✅ **Current State Documented**: All metrics recorded as baseline
+  - Interaction R² improvement: **0.12%** (FAIL - target: >5%)
+  - Non-linearity RF gain: **-0.15%** (FAIL - target: >5-10%)
+  - Age-variance ratio: **1.09** (FAIL - target: >3.0)
+  - Heavy-tail outliers (4σ): **0x observed vs expected** (FAIL - target: >5x)
+  - Feature correlation mean: **0.089** (FAIL - target: >0.15)
+
 **Acceptance Criteria**
-- [ ] Implement per-feature noise envelopes (configurable mean, variance, heavy-tail options).
-- [ ] Create interaction randomizers (e.g., methylation × SNP × lifestyle shuffles, dropout masks, chaos kernels).
-- [ ] Introduce age-cohort uncertainty toggles (longevity outliers, early-decline cohorts, cross-bucket swaps).
-- [ ] Expose YAML/JSON configuration for chaos parameters with on/off toggles.
-- [ ] Update data validation pipeline to log chaos parameters alongside summaries.
+- [ ] Implement per-feature noise envelopes (configurable mean, variance, heavy-tail options)
+  - Target: Achieve 4σ outlier ratio >5x (currently 0x)
+  - Target: Increase residual skewness from 0.014 to >0.5
+  - Target: Increase residual kurtosis from -0.11 to >2.0
+- [ ] Create interaction randomizers (e.g., methylation × SNP × lifestyle shuffles, dropout masks, chaos kernels)
+  - Target: Achieve polynomial feature R² improvement >5% (currently 0.12%)
+  - Target: Create at least 50 2nd-order interactions and 20 3rd-order interactions
+- [ ] Introduce age-cohort uncertainty toggles (longevity outliers, early-decline cohorts, cross-bucket swaps)
+  - Target: Achieve variance ratio >3.0 between age groups (currently 1.09)
+  - Target: Elderly variance should be 3x young adult variance
+  - Target: Introduce 5-10% "lifestyle paradoxes" per cohort
+- [ ] Implement feature correlation structure
+  - Target: Mean absolute correlation >0.15 (currently 0.089)
+  - Target: At least 30% of feature pairs with |r| > 0.3
+  - Target: At least 10% of feature pairs with |r| > 0.5
+- [ ] Add non-linearity that benefits Random Forest
+  - Target: RF R² should exceed Linear R² by >5-10% (currently -0.15%)
+  - Target: Create non-monotonic relationships between features and target
+- [ ] Expose YAML/JSON configuration for chaos parameters with on/off toggles
+- [ ] Update data validation pipeline to log chaos parameters alongside summaries
+- [ ] Ensure reproducibility with seed control while maintaining stochasticity
+
+**Implementation Strategy**:
+1. **Phase 1**: Heavy-tailed noise (Lévy flights, Student-t distributions)
+2. **Phase 2**: Explicit interaction terms (multiplicative, exponential)
+3. **Phase 3**: Age-dependent variance scaling
+4. **Phase 4**: Feature correlation structure (correlation matrix injection)
+5. **Phase 5**: Non-linear transformations (log, exp, polynomial)
 
 **Files to Modify**
 - `backend/api/data/generator_v2_biological.py`
 - `backend/api/data/datasets/` (new chaos-aware snapshots)
 - `backend/api/data/validation.py`
+
+**Validation Criteria**:
+- [ ] Interaction R² improvement: 0.12% → >5%
+- [ ] RF vs Linear R² difference: -0.15% → >5%
+- [ ] Age-variance ratio: 1.09 → >3.0
+- [ ] Heavy-tail 4σ ratio: 0x → >5x
+- [ ] Feature correlation mean: 0.089 → >0.15
+- [ ] Pearson-Spearman difference: 0.0006 → >0.05
+- [ ] Re-run `01_baseline_statistical_analysis.ipynb` and achieve at least 3/5 PASS
 
 ---
 
