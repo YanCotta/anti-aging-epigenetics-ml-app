@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## 🔄 STRATEGIC PIVOT: October 16, 2025 – Multi-Level Uncertainty Initiative
+
+### **🎯 Orientation Recap (Prof. Fabrício, Prof. Letícia)**
+
+- Inject explicit **chaos, randomization, and uncertainty across every interaction layer** of the synthetic cohorts.
+- Model **unknown interactions** between methylation sites, SNPs, lifestyle factors, and biological readouts instead of assuming stable relationships.
+- Represent **cross-age uncertainty** (e.g., unhealthy 20-year-olds reaching 80, resilient elderly with unexpected outcomes).
+- Expand diagnostics: covariance matrices, variance decomposition, residual distribution summaries, minimum/maximum/mean feature importance envelopes.
+
+### **📌 Decisions & Documentation Work (Today)**
+
+- Introduced **Issue cluster #49-#53** to manage the uncertainty initiative (see `docs/DETAILED_ISSUES.md`).
+- Refreshed **ROADMAP**, **README**, **README_PROFESSORS**, **PROJECT_STATUS_OCT_2025**, **STATISTICAL_VALIDATION_SUMMARY**, and **DOCUMENTATION_ORGANIZATION** to reflect the pivot.
+- Logged deliverables required for the next notebook iteration: stochastic residual analysis, uncertainty-aware feature weighting, covariance heatmaps, and entropy scoring.
+- Defined deliverable checklists for dataset chaos injection (perturbation engine, age-bucket uncertainty, interaction randomizers, audit dashboards).
+- Flagged all prior performance claims as **upper-bound historical context** pending re-baselining after uncertainty integration.
+
+### **🛠️ Implementation Planning Notes**
+
+- **Generator roadmap**: design layered stochastic injectors (per-feature, per-interaction, per-age-cohort) with reproducibility toggles.
+- **Metrics roadmap**: extend evaluation scripts to report variance of residuals, covariance drift, marginal feature entropy, and cohort resilience indices.
+- **Notebook alignment**: `01_baseline_statistical_analysis.ipynb` to receive new sections for uncertainty simulation, chaos parameter sweeps, and skeptical commentary updates once execution blockers are cleared.
+- **Validation gates**: establish Monte Carlo runs (≥100) to characterize metric distributions before reporting point estimates.
+
+---
+
 ## 🎉 MAJOR BREAKTHROUGH: October 14, 2025 - Issues #43, #44, #45, #46, #47 RESOLVED
 
 ### **🚀 PUBLICATION-READY MILESTONE ACHIEVED**
