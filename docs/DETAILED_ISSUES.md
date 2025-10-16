@@ -1,9 +1,111 @@
 # Complete GitHub Issues for Anti-Aging ML App Development
 
-**Last Updated:** October 14, 2025  
-**Status:** 🎉 Major Breakthrough Achieved - Critical Issues #43 & #44 RESOLVED
+**Last Updated:** October 16, 2025  
+**Status:** 🔄 Strategic Pivot In Progress – Uncertainty Integration (Issues #49-#53)
 
-This document contains all GitHub issues derived from the comprehensive development plan. The critical scientific validity issues identified during September 21, 2025 analysis have been successfully resolved with comprehensive genomics-ML pipeline implementation.
+This document contains all GitHub issues derived from the comprehensive development plan. As of October 16, 2025 we are executing a professor-directed pivot to embed stochasticity, chaos, and uncertainty across every layer of the synthetic genomics pipeline. The publication-ready work completed on October 14, 2025 remains documented as the historical baseline while the new Issue cluster (#49-#53) drives the uncertainty initiative.
+
+## 🔄 NEW ISSUE CLUSTER – UNCERTAINTY & CHAOS INTEGRATION (October 16, 2025)
+
+### Issue #49: Multi-Layer Chaos Injection Engine
+**Labels:** phase-2, ml, high-priority  
+**Milestone:** Immediate Pivot Execution
+
+**Description:** Design and implement stochastic perturbations that inject uncertainty into feature-level values, cross-feature interactions, and age-bucket assignments. The generator must support reproducible chaos (seed control) while preventing models from relying on single, deterministic relationships between methylation sites, SNPs, lifestyle factors, and biomarkers.
+
+**Acceptance Criteria**
+- [ ] Implement per-feature noise envelopes (configurable mean, variance, heavy-tail options).
+- [ ] Create interaction randomizers (e.g., methylation × SNP × lifestyle shuffles, dropout masks, chaos kernels).
+- [ ] Introduce age-cohort uncertainty toggles (longevity outliers, early-decline cohorts, cross-bucket swaps).
+- [ ] Expose YAML/JSON configuration for chaos parameters with on/off toggles.
+- [ ] Update data validation pipeline to log chaos parameters alongside summaries.
+
+**Files to Modify**
+- `backend/api/data/generator_v2_biological.py`
+- `backend/api/data/datasets/` (new chaos-aware snapshots)
+- `backend/api/data/validation.py`
+
+---
+
+### Issue #50: Uncertainty-Aware Evaluation Toolkit
+**Labels:** phase-2, ml, testing, high-priority  
+**Milestone:** Immediate Pivot Execution
+
+**Description:** Extend evaluation scripts and notebooks to quantify how uncertainty propagates through model training and inference. Provide covariance analysis, residual distribution summaries, entropy-based feature importance diagnostics, and resilience metrics for each age cohort.
+
+**Acceptance Criteria**
+- [ ] Compute covariance heatmaps before/after chaos injection and highlight drift.
+- [ ] Report residual variance, skewness, kurtosis, and tail probabilities.
+- [ ] Calculate entropy of feature importance across Monte Carlo runs.
+- [ ] Produce min/mean/max feature importance envelopes and resilience indices per cohort.
+- [ ] Integrate outputs into `notebooks/01_baseline_statistical_analysis.ipynb` and documentation.
+
+**Files to Modify**
+- `backend/api/ml/statistical_rigor.py`
+- `backend/api/ml/publication_ready_evaluation.py`
+- `notebooks/01_baseline_statistical_analysis.ipynb`
+- `docs/STATISTICAL_VALIDATION_SUMMARY.md`
+
+---
+
+### Issue #51: Monte Carlo Experiment Orchestrator
+**Labels:** phase-2, ml, infrastructure, high-priority  
+**Milestone:** Immediate Pivot Execution
+
+**Description:** Create an orchestration layer that runs the full pipeline multiple times (≥100 iterations) under varying chaos seeds, aggregates metrics, and emits consolidated reports for residuals, feature importance, and prediction intervals.
+
+**Acceptance Criteria**
+- [ ] Implement CLI/Notebook entry point for batched runs with seed sweeps.
+- [ ] Aggregate metrics (R², MAE, covariance drift, entropy) with confidence intervals.
+- [ ] Persist run metadata (seed, chaos config) for reproducibility.
+- [ ] Generate visual summaries (violin plots, box plots, heatmaps) for documentation.
+- [ ] Log results to MLflow for traceability.
+
+**Files to Modify**
+- `backend/api/ml/monty_carlo_runner.py` (new)
+- `backend/api/ml/train_linear.py` (extend for batch mode)
+- `mlruns/` metadata
+
+---
+
+### Issue #52: Documentation & Notebook Alignment with Chaos Initiative
+**Labels:** documentation, phase-2, high-priority  
+**Milestone:** Immediate Pivot Execution
+
+**Description:** Update all core documentation and notebooks so that the uncertainty initiative is front-and-center. Ensure the baseline notebook includes new chaos sections, professor feedback commentary, and instructions for interpreting stochastic outputs.
+
+**Acceptance Criteria**
+- [ ] Update README, README_PROFESSORS, ROADMAP, CHANGELOG, PROJECT_STATUS, DOCUMENTATION_ORGANIZATION.
+- [ ] Add chaos-specific sections to `notebooks/01_baseline_statistical_analysis.ipynb` with markdown explaining objectives and expected outputs.
+- [ ] Document configuration knobs for chaos parameters and Monte Carlo runs.
+- [ ] Provide skeptical interpretation templates that account for variance, not just point estimates.
+
+**Files to Modify**
+- Repository-wide core markdown files (as listed)
+- `notebooks/01_baseline_statistical_analysis.ipynb`
+
+---
+
+### Issue #53: Chaos Governance & Guardrails
+**Labels:** phase-2, infrastructure, high-priority  
+**Milestone:** Immediate Pivot Execution
+
+**Description:** Put guardrails in place to ensure chaos injections stay biologically plausible. Provide monitoring scripts that detect when variance inflation destroys biological realism and offer rollback or adjustment recommendations.
+
+**Acceptance Criteria**
+- [ ] Define allowable parameter ranges for chaos modules (document rationale).
+- [ ] Implement sanity checks (e.g., keep methylation within [0,1], maintain allele frequency bounds, ensure BMI/residuals remain realistic).
+- [ ] Add automated alerts if chaos violates biological constraints.
+- [ ] Update validation reports to flag runs exceeding guardrail thresholds.
+- [ ] Provide recovery instructions (config resets, parameter sweeps) in documentation.
+
+**Files to Modify**
+- `backend/api/data/validation.py`
+- `backend/api/ml/statistical_rigor.py`
+- `docs/ROADMAP.md`
+- `docs/PROJECT_STATUS_OCT_2025.md`
+
+---
 
 ## ✅ CRITICAL ISSUES RESOLVED (October 14, 2025)
 
