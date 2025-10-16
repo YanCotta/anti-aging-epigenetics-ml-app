@@ -1,16 +1,16 @@
 # Statistical Validation Summary - Publication-Ready Results
 
-**Date:** October 14, 2025  
-**Milestone:** Issues #45, #46, #47 Completed  
-**Status:** ✅ Publication-Ready with Full Statistical Rigor
+**Date:** October 16, 2025  
+**Milestone:** Issues #45, #46, #47 Completed (Historical Baseline)  
+**Status:** 🔄 Publication-Ready Results Retained as Reference — Uncertainty Re-Baselining in Progress
 
 ---
 
 ## Executive Summary
 
-This document summarizes the comprehensive statistical validation implemented for the anti-aging ML application, completing Issues #45 (Aging Benchmarks), #46 (Advanced Feature Engineering), and #47 (Statistical Rigor). The pipeline now includes publication-quality statistical testing with bootstrap confidence intervals, permutation tests, multiple testing correction, and age-stratified analysis.
+This document summarizes the comprehensive statistical validation implemented for the anti-aging ML application, completing Issues #45 (Aging Benchmarks), #46 (Advanced Feature Engineering), and #47 (Statistical Rigor). As of October 16, 2025 these results are treated as the **pre-chaos baseline**. The new uncertainty initiative (Issues #49-#53) will extend these analyses with Monte Carlo variance envelopes, covariance drift monitoring, and entropy-based diagnostics before any new claims replace the metrics below.
 
-**Key Achievement**: Model achieves EXCELLENT performance category (R²=0.963, MAE=2.4 years) with full statistical validation, though results represent upper bound due to clean synthetic data.
+**Key Reminder**: Model performance (R²=0.963, MAE=2.4 years) reflects clean synthetic data. Future reports must include uncertainty bands derived from chaos-augmented simulations.
 
 ---
 
