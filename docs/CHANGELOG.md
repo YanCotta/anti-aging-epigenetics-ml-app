@@ -40,10 +40,10 @@
 | **Age Correlation** | 0.6-0.8 | 0.621 | **0.612** | ✅ **ACHIEVED** |
 | **Interaction Features** | ≥50 | 0 | **50** | ✅ **ACHIEVED** |
 | **Total Features** | >78 | 62 | **142** | ✅ **+129%** |
-| **Age-Variance Ratio** | >3.0 | 2.05 | 2.50 | 🟡 83% (close) |
-| **Mean \|Correlation\|** | >0.15 | 0.138 | 0.110 | 🟡 73% (mixed) |
-| **Heavy-Tail Outliers** | >5x | 0x | 0x | ❌ (clipping issue) |
-| **RF vs Linear Gain** | >5% | TBD | **TBD** | ⏳ **Notebook validation pending** |
+| **Age-Variance Ratio** | >3.0 | 2.05 | 1.69 | ❌ **56% - FAIL** |
+| **Mean \|Correlation\|** | >0.15 | 0.138 | 0.127 | ❌ **85% - FAIL** |
+| **Heavy-Tail Outliers** | >5x | 0x | 20x (4σ) | ✅ **PASS** |
+| **RF vs Linear Gain** | >5% | TBD | **-1.82%** | ❌ **FAIL** |
 
 ### **Key Achievements**
 
@@ -77,12 +77,71 @@ elderly_noise_scale: 6.0
 pathway_correlation: 0.4
 ```
 
-### **Next Steps**
+### **Validation Results (October 21, 2025)** - Notebook Execution Complete
 
-1. ⏳ **Run `notebooks/01_baseline_statistical_analysis.ipynb`** with chaos datasets
-2. ⏳ **Run `notebooks/02_random_forest_onnx_shap.ipynb`** to measure RF vs Linear gain (Phase 5 validation)
-3. ⏳ **Compare before/after metrics** to quantify improvements
-4. ⏳ **Fine-tune parameters** if RF gain target not met
+**✅ Executed**: `notebooks/01_baseline_statistical_analysis.ipynb` with `datasets_chaos_v1/`
+
+**📊 Model Performance on Chaos-Injected Data**:
+```
+Linear Regression (Test Set):
+  R²: 0.5106 (down from 0.9633 baseline - much more realistic!)
+  MAE: 8.42 years
+  RMSE: 10.58 years
+
+Random Forest (Test Set):
+  R²: 0.5012
+  MAE: 8.49 years  
+  RMSE: 10.68 years
+```
+
+**🎯 Phase 5 Validation Result: ❌ FAILED**
+- **RF vs Linear R² Gain: -1.82%** (target: >5%)
+- RF **underperforms** Linear Regression
+- Interaction features not providing useful non-linear signal
+
+**📋 Quantitative Gap Analysis (1/5 PASS, 3/5 FAIL)**:
+
+| Dimension | Score | Details |
+|-----------|-------|---------|
+| **Interaction complexity** | ⚠️ PARTIAL | R² improvement: -0.0908 (negative) |
+| **Non-linearity** | ❌ FAIL | RF vs Linear diff: -0.0193 |
+| **Age-dependent variance** | ❌ FAIL | Variance ratio: 1.69 (target: >3.0) |
+| **Heavy-tailed outliers** | ✅ PASS | 20x at 4σ level |
+| **Feature correlations** | ❌ FAIL | Mean \|r\|: 0.127 (target: >0.15) |
+
+**📌 VERDICT**: Data requires **MAJOR REDESIGN** (notebook cell output)
+- Too simplistic for realistic aging research
+- Will not challenge advanced ML models meaningfully
+- Risk of publishing results based on toy data
+
+### **Issue #49 Summary: 3/7 Targets Achieved**
+
+**✅ ACHIEVED (Core Implementation)**:
+1. Age correlation: 0.612 (target: 0.6-0.8) ✅
+2. Interaction features: 50 (target: ≥50) ✅
+3. Total features: 142 (target: >78) ✅
+4. Heavy-tail outliers: 20x at 4σ (target: >5x) ✅
+
+**❌ FAILED (Validation)**:
+5. Age-variance ratio: 1.69 (target: >3.0) - **56% of target**
+6. Feature correlations: 0.127 (target: >0.15) - **85% of target**
+7. RF vs Linear gain: -1.82% (target: >5%) - **NEGATIVE**
+
+### **Root Cause Analysis**
+
+1. **Interactions are too weak**: 50 interactions created but not providing meaningful non-linear signal
+2. **Age-variance scaling insufficient**: Young-to-elderly noise ratio of 3:1 needs to be at least 5:1
+3. **Pathway correlations too weak**: 0.4 correlation strength not creating sufficient feature dependencies
+4. **Interaction strength parameter missing**: No explicit weight for interaction terms
+
+### **Next Steps - Issue #50 Planning**
+
+1. ✅ **Increase `interaction_strength`** parameter from 1.0 to 2.5-3.0
+2. ✅ **Boost age-dependent variance**: elderly_noise_scale from 6.0 to 12.0-15.0
+3. ✅ **Strengthen pathway correlations**: pathway_correlation from 0.4 to 0.6-0.7
+4. ✅ **Add multiplicative interactions**: Current interactions are additive (f1 * f2), need true non-linear effects
+5. ⏳ **Re-generate datasets** with improved parameters
+6. ⏳ **Re-run validation notebook** to measure improvements
 
 ### **Files Modified**
 
