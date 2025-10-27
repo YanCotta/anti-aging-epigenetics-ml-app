@@ -1,7 +1,14 @@
+# [ARCHIVED - FUTURE ROADMAP]
+
+**NOTICE:** This document describes the large-scale production roadmap (FastAPI/React) planned *after* the successful validation of the MVP. The current scope of the thesis is focused exclusively on the Streamlit MVP, as detailed in `docs/PIVOT.md`.
+
+---
+
 # Anti-Aging ML Application - Development Roadmap
 
 **Last Updated:** October 21, 2025  
-**Current Status:** ✅ Issue #49 Complete – Awaiting Notebook Validation
+**Current Status:** ✅ Issue #49 Complete – Awaiting Notebook Validation  
+**Archive Date:** October 27, 2025 (Strategic Pivot to Streamlit MVP)
 
 ---
 
