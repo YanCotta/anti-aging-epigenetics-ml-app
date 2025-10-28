@@ -1,6 +1,6 @@
 {
   "model_version": "v2_mvp",
-  "training_date": "2025-10-28T11:17:49.699814",
+  "training_date": "2025-10-28T12:42:31.327199",
   "n_samples": 5000,
   "features": [
     "age",
