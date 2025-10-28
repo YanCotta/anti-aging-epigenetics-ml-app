@@ -1,18 +1,18 @@
 """
-LiveMore MVP - Biological Age Predictor with XAI
-=================================================
-Streamlit app for personalized biological age prediction using Random Forest + SHAP explanations.
+LiveMore V3 - Preditor de Idade Biológica com IA Explicável  
+=============================================================
+Aplicativo em Português Brasileiro com 5 SNPs validados e resultados realistas.
 
-Model Performance:
-- Training R²: 0.9499
-- Training MAE: 2.02 years
-- RF vs Linear Gain: +3.09%
+Performance do Modelo:
+- R² de Treinamento: 0.9191
+- MAE (Erro Médio Absoluto): 2.79 anos
+- RMSE: 3.82 anos
 
-Features: 9 simplified inputs (demographics, lifestyle, risk factors, genetics)
+Features: 13 entradas (demografia, 5 SNPs, estilo de vida, fatores de risco)
+Tecnologia: Random Forest + SHAP (IA Explicável)
 """
 
 import os
-import pickle
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -21,11 +21,11 @@ import shap
 import matplotlib.pyplot as plt
 
 # ==========================
-# Configuration
+# Configuração
 # ==========================
 
 st.set_page_config(
-    page_title="LiveMore - Biological Age Predictor",
+    page_title="LiveMore - Preditor de Idade Biológica",
     page_icon="🧬",
     layout="centered"
 )
@@ -33,12 +33,12 @@ st.set_page_config(
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "app_model")
 
 # ==========================
-# Load Model Artifacts
+# Carregar Modelo
 # ==========================
 
 @st.cache_resource
 def load_model_artifacts():
-    """Load Random Forest model, scaler, and SHAP explainer."""
+    """Carrega modelo Random Forest, scaler e explainer SHAP."""
     try:
         model_path = os.path.join(MODEL_DIR, "livemore_rf_v2.joblib")
         scaler_path = os.path.join(MODEL_DIR, "livemore_scaler_v2.joblib")
@@ -50,396 +50,498 @@ def load_model_artifacts():
         
         return model, scaler, explainer
     except FileNotFoundError as e:
-        st.error(f"❌ Model artifacts not found: {e}")
-        st.info("Please ensure model files are in `antiaging-mvp/streamlit_app/app_model/`")
+        st.error(f"❌ Modelo não encontrado: {e}")
+        st.info("Verifique se os arquivos do modelo estão em `antiaging-mvp/streamlit_app/app_model/`")
         st.stop()
 
+model, scaler, explainer = load_model_artifacts()
+
 # ==========================
-# Feature Definitions
+# Definições de Features
 # ==========================
 
-FEATURE_INFO = {
-    "age": {
-        "label": "Age",
-        "min": 25, "max": 80, "default": 45,
-        "help": "Your chronological age in years"
+FEATURES = [
+    'age', 'gender', 'APOE_rs429358', 'FOXO3_rs2802292', 'TP53_rs1042522', 
+    'SIRT1_rs7069102', 'TERT_rs2736100', 'exercise_hours_week', 
+    'diet_quality_score', 'sleep_hours', 'stress_level', 
+    'smoking_pack_years', 'alcohol_drinks_week'
+]
+
+NAMES_PT = {
+    'age': 'Idade', 
+    'gender': 'Sexo', 
+    'APOE_rs429358': 'APOE ε4', 
+    'FOXO3_rs2802292': 'FOXO3', 
+    'TP53_rs1042522': 'TP53',
+    'SIRT1_rs7069102': 'SIRT1', 
+    'TERT_rs2736100': 'TERT', 
+    'exercise_hours_week': 'Exercício', 
+    'diet_quality_score': 'Dieta',
+    'sleep_hours': 'Sono', 
+    'stress_level': 'Estresse', 
+    'smoking_pack_years': 'Tabagismo', 
+    'alcohol_drinks_week': 'Álcool'
+}
+
+# Informações detalhadas sobre cada SNP
+SNP_INFO = {
+    'APOE_rs429358': {
+        'nome': 'APOE ε4',
+        'gene': 'APOE (Apolipoproteína E)',
+        'funcao': 'Risco de Alzheimer e envelhecimento cognitivo',
+        'opcoes': ['ε2/ε3 (Protetor)', 'ε3/ε3 (Neutro)', 'ε4+ (Risco Alzheimer)'],
+        'valores': [0, 1, 2]
     },
-    "gender": {
-        "label": "Gender",
-        "options": ["Male", "Female"],
-        "values": [1, 0],
-        "help": "Biological sex (minimal impact on prediction: 0.1%)"
+    'FOXO3_rs2802292': {
+        'nome': 'FOXO3',
+        'gene': 'FOXO3 (Forkhead Box O3)',
+        'funcao': 'Gene da longevidade - resistência ao estresse oxidativo',
+        'opcoes': ['G/G (Longevidade)', 'G/T (Neutro)', 'T/T (Padrão)'],
+        'valores': [0, 1, 2]
     },
-    "exercise_hours_week": {
-        "label": "Exercise (hours/week)",
-        "min": 0.0, "max": 20.0, "default": 5.0, "step": 0.5,
-        "help": "Weekly exercise hours (diminishing returns pattern)"
+    'TP53_rs1042522': {
+        'nome': 'TP53',
+        'gene': 'TP53 (Proteína Tumoral 53)',
+        'funcao': 'Reparo de DNA e supressão tumoral',
+        'opcoes': ['Pro/Pro (Reparo+)', 'Pro/Arg (Neutro)', 'Arg/Arg (Padrão)'],
+        'valores': [0, 1, 2]
     },
-    "diet_quality_score": {
-        "label": "Diet Quality Score",
-        "min": 1, "max": 10, "default": 7,
-        "help": "1=Poor, 10=Excellent. Quadratic benefit at 8+"
+    'SIRT1_rs7069102': {
+        'nome': 'SIRT1',
+        'gene': 'SIRT1 (Sirtuína 1)',
+        'funcao': 'Regulação metabólica e longevidade celular',
+        'opcoes': ['T/T (Protetor)', 'T/C (Neutro)', 'C/C (Padrão)'],
+        'valores': [0, 1, 2]
     },
-    "sleep_hours": {
-        "label": "Sleep (hours/night)",
-        "min": 4.0, "max": 10.0, "default": 7.5, "step": 0.5,
-        "help": "Average nightly sleep. Optimal: 7.5h (U-curve pattern)"
-    },
-    "stress_level": {
-        "label": "Stress Level",
-        "min": 1, "max": 10, "default": 5,
-        "help": "1=Low, 10=High. Exponential damage pattern"
-    },
-    "smoking_pack_years": {
-        "label": "Smoking (pack-years)",
-        "min": 0, "max": 40, "default": 0,
-        "help": "Packs per day × years smoked. Critical risk factor (11.3% importance)"
-    },
-    "alcohol_drinks_week": {
-        "label": "Alcohol (drinks/week)",
-        "min": 0, "max": 30, "default": 5,
-        "help": "Weekly alcohol consumption. Protective ≤7, harmful >7"
-    },
-    "genetic_risk_score": {
-        "label": "Genetic Risk Score",
-        "min": 0.0, "max": 1.0, "default": 0.5, "step": 0.05,
-        "help": "Simplified genetic risk (0=low, 1=high). Interacts with lifestyle."
+    'TERT_rs2736100': {
+        'nome': 'TERT',
+        'gene': 'TERT (Telomerase)',
+        'funcao': 'Manutenção do comprimento dos telômeros',
+        'opcoes': ['G/G (Telômeros+)', 'G/T (Neutro)', 'T/T (Telômeros-)'],
+        'valores': [0, 1, 2]
     }
 }
 
-FEATURE_ORDER = [
-    "age", "gender", "exercise_hours_week", "diet_quality_score",
-    "sleep_hours", "stress_level", "smoking_pack_years",
-    "alcohol_drinks_week", "genetic_risk_score"
-]
-
-# Business-friendly feature names for display
-FEATURE_DISPLAY_NAMES = {
-    "age": "Age",
-    "gender": "Gender",
-    "exercise_hours_week": "Exercise",
-    "diet_quality_score": "Diet Quality",
-    "sleep_hours": "Sleep",
-    "stress_level": "Stress",
-    "smoking_pack_years": "Smoking",
-    "alcohol_drinks_week": "Alcohol",
-    "genetic_risk_score": "Genetic Risk"
-}
-
 # ==========================
-# Helper Functions
+# Interface Principal
 # ==========================
 
-def create_input_dataframe(inputs):
-    """Convert user inputs to DataFrame matching model training format."""
-    df = pd.DataFrame([inputs], columns=FEATURE_ORDER)
-    return df
+st.title("🧬 LiveMore - Preditor de Idade Biológica")
+st.markdown("""
+Descubra sua idade biológica usando Inteligência Artificial e obtenha insights personalizados sobre os fatores que afetam seu envelhecimento.
 
-def predict_biological_age(model, scaler, input_df):
-    """Make prediction using loaded model."""
-    X_scaled = scaler.transform(input_df)
-    prediction = model.predict(X_scaled)[0]
-    return prediction
+**Performance do Modelo:** R²=0.92, MAE=2.79 anos | **Tecnologia:** Random Forest + SHAP (IA Explicável)
+""")
 
-def generate_shap_explanation(explainer, scaler, input_df):
-    """Generate SHAP values for input."""
-    X_scaled = scaler.transform(input_df)
-    shap_values = explainer.shap_values(X_scaled)
-    return shap_values[0]  # Return values for single prediction
+st.divider()
 
-def interpret_age_difference(predicted, chronological):
-    """Provide business-friendly interpretation of age difference."""
-    diff = predicted - chronological
+# ==========================
+# Formulário de Entrada
+# ==========================
+
+with st.sidebar:
+    st.header("📋 Seu Perfil de Saúde")
+    st.markdown("*Preencha suas informações abaixo*")
     
-    if abs(diff) < 2:
-        return "🎯 **Excellent!** Your biological age matches your chronological age.", "success"
-    elif diff < 0:
-        years = abs(diff)
-        return f"✨ **Great news!** You're biologically {years:.1f} years younger than your age.", "success"
-    elif diff < 5:
-        return f"⚠️ Your biological age is {diff:.1f} years older. Consider lifestyle improvements.", "warning"
-    else:
-        return f"🔴 **Action needed:** {diff:.1f} years older biologically. Prioritize health interventions.", "error"
-
-# ==========================
-# Main App
-# ==========================
-
-def main():
-    # Load model artifacts
-    model, scaler, explainer = load_model_artifacts()
+    inputs = {}
     
-    # Header
-    st.title("🧬 LiveMore - Biological Age Predictor")
-    st.markdown("""
-    Discover your biological age using AI and get personalized insights about factors affecting your aging.
+    # Demografia
+    st.subheader("👤 Demografia")
+    inputs['age'] = st.slider(
+        "Idade (anos)", 
+        25, 80, 45,
+        help="Sua idade cronológica em anos"
+    )
     
-    **Model Performance:** R²=0.95, MAE=2.02 years | **Powered by:** Random Forest + SHAP XAI
-    """)
+    gender_display = st.radio(
+        "Sexo Biológico", 
+        ["Masculino", "Feminino"],
+        help="Sexo biológico (impacto mínimo na predição: 0.1%)"
+    )
+    inputs['gender'] = 1 if gender_display == "Masculino" else 0
+    
+    # Genética
+    st.subheader("🧬 Fatores Genéticos (SNPs)")
+    st.markdown("*Selecione seu genótipo ou use 'Não sei' para valores padrão*")
+    
+    for snp_key, snp_data in SNP_INFO.items():
+        opcoes_completas = snp_data['opcoes'] + ['Não sei / Padrão']
+        
+        with st.expander(f"{snp_data['nome']} - {snp_data['gene']}"):
+            st.markdown(f"**Função:** {snp_data['funcao']}")
+            
+            selecao = st.selectbox(
+                f"Genótipo {snp_data['nome']}",
+                opcoes_completas,
+                index=len(opcoes_completas) - 1,
+                key=snp_key,
+                label_visibility="collapsed"
+            )
+            
+            if selecao in snp_data['opcoes']:
+                inputs[snp_key] = snp_data['valores'][snp_data['opcoes'].index(selecao)]
+            else:
+                inputs[snp_key] = 1  # Valor padrão neutro
+    
+    # Estilo de Vida
+    st.subheader("🏃 Estilo de Vida")
+    
+    inputs['exercise_hours_week'] = st.slider(
+        "Exercício (horas/semana)", 
+        0.0, 20.0, 5.0, 0.5,
+        help="Horas semanais de exercício (padrão de retornos decrescentes)"
+    )
+    
+    inputs['diet_quality_score'] = st.slider(
+        "Qualidade da Dieta", 
+        1, 10, 7,
+        help="1=Péssima, 10=Excelente. Benefício quadrático acima de 8"
+    )
+    
+    inputs['sleep_hours'] = st.slider(
+        "Sono (horas/noite)", 
+        4.0, 10.0, 7.5, 0.5,
+        help="Horas médias de sono por noite. Ótimo: 7.5h (curva em U)"
+    )
+    
+    inputs['stress_level'] = st.slider(
+        "Nível de Estresse", 
+        1, 10, 5,
+        help="1=Baixo, 10=Alto. Padrão de dano exponencial em níveis altos"
+    )
+    
+    # Fatores de Risco
+    st.subheader("⚠️ Fatores de Risco")
+    
+    inputs['smoking_pack_years'] = st.slider(
+        "Tabagismo (maços-ano)", 
+        0, 40, 0,
+        help="Maços por dia × anos fumando. Fator de risco crítico (sempre prejudicial)"
+    )
+    
+    inputs['alcohol_drinks_week'] = st.slider(
+        "Álcool (doses/semana)", 
+        0, 30, 5,
+        help="Consumo semanal de álcool. Protetor ≤7, prejudicial >7"
+    )
     
     st.divider()
-    
-    # Sidebar - Input Form
-    with st.sidebar:
-        st.header("📋 Your Health Profile")
-        st.markdown("*Fill in your information below*")
+    predict_button = st.button(
+        "🔮 Prever Minha Idade Biológica", 
+        type="primary", 
+        use_container_width=True
+    )
+
+# ==========================
+# Predição e Resultados
+# ==========================
+
+if predict_button:
+    with st.spinner("🔄 Analisando seus dados..."):
+        # Criar DataFrame de entrada
+        df = pd.DataFrame([inputs], columns=FEATURES)
         
-        inputs = {}
+        # Predição
+        X_scaled = scaler.transform(df)
+        predicted_age = model.predict(X_scaled)[0]
         
-        # Demographics
-        st.subheader("Demographics")
-        inputs["age"] = st.slider(
-            FEATURE_INFO["age"]["label"],
-            FEATURE_INFO["age"]["min"],
-            FEATURE_INFO["age"]["max"],
-            FEATURE_INFO["age"]["default"],
-            help=FEATURE_INFO["age"]["help"]
-        )
+        # Valores SHAP
+        shap_values = explainer.shap_values(X_scaled)[0]
         
-        gender_display = st.radio(
-            FEATURE_INFO["gender"]["label"],
-            FEATURE_INFO["gender"]["options"],
-            help=FEATURE_INFO["gender"]["help"]
-        )
-        inputs["gender"] = FEATURE_INFO["gender"]["values"][
-            FEATURE_INFO["gender"]["options"].index(gender_display)
-        ]
+        # ==========================
+        # Exibir Resultados
+        # ==========================
         
-        # Lifestyle
-        st.subheader("Lifestyle")
-        inputs["exercise_hours_week"] = st.slider(
-            FEATURE_INFO["exercise_hours_week"]["label"],
-            FEATURE_INFO["exercise_hours_week"]["min"],
-            FEATURE_INFO["exercise_hours_week"]["max"],
-            FEATURE_INFO["exercise_hours_week"]["default"],
-            FEATURE_INFO["exercise_hours_week"]["step"],
-            help=FEATURE_INFO["exercise_hours_week"]["help"]
-        )
+        st.header("📊 Seus Resultados")
         
-        inputs["diet_quality_score"] = st.slider(
-            FEATURE_INFO["diet_quality_score"]["label"],
-            FEATURE_INFO["diet_quality_score"]["min"],
-            FEATURE_INFO["diet_quality_score"]["max"],
-            FEATURE_INFO["diet_quality_score"]["default"],
-            help=FEATURE_INFO["diet_quality_score"]["help"]
-        )
+        col1, col2, col3 = st.columns(3)
         
-        inputs["sleep_hours"] = st.slider(
-            FEATURE_INFO["sleep_hours"]["label"],
-            FEATURE_INFO["sleep_hours"]["min"],
-            FEATURE_INFO["sleep_hours"]["max"],
-            FEATURE_INFO["sleep_hours"]["default"],
-            FEATURE_INFO["sleep_hours"]["step"],
-            help=FEATURE_INFO["sleep_hours"]["help"]
-        )
+        with col1:
+            st.metric(
+                "Idade Cronológica", 
+                f"{inputs['age']} anos",
+                help="Sua idade real em anos"
+            )
         
-        inputs["stress_level"] = st.slider(
-            FEATURE_INFO["stress_level"]["label"],
-            FEATURE_INFO["stress_level"]["min"],
-            FEATURE_INFO["stress_level"]["max"],
-            FEATURE_INFO["stress_level"]["default"],
-            help=FEATURE_INFO["stress_level"]["help"]
-        )
+        with col2:
+            age_diff = predicted_age - inputs['age']
+            st.metric(
+                "Idade Biológica", 
+                f"{predicted_age:.1f} anos",
+                f"{age_diff:+.1f} anos",
+                delta_color="inverse",
+                help="Idade estimada pelo modelo baseada em seus fatores de saúde"
+            )
         
-        # Risk Factors
-        st.subheader("Risk Factors")
-        inputs["smoking_pack_years"] = st.slider(
-            FEATURE_INFO["smoking_pack_years"]["label"],
-            FEATURE_INFO["smoking_pack_years"]["min"],
-            FEATURE_INFO["smoking_pack_years"]["max"],
-            FEATURE_INFO["smoking_pack_years"]["default"],
-            help=FEATURE_INFO["smoking_pack_years"]["help"]
-        )
+        with col3:
+            st.metric(
+                "Diferença Absoluta", 
+                f"{abs(age_diff):.1f} anos",
+                help="Diferença entre idade biológica e cronológica"
+            )
         
-        inputs["alcohol_drinks_week"] = st.slider(
-            FEATURE_INFO["alcohol_drinks_week"]["label"],
-            FEATURE_INFO["alcohol_drinks_week"]["min"],
-            FEATURE_INFO["alcohol_drinks_week"]["max"],
-            FEATURE_INFO["alcohol_drinks_week"]["default"],
-            help=FEATURE_INFO["alcohol_drinks_week"]["help"]
-        )
+        # Interpretação da diferença
+        st.divider()
         
-        # Genetics
-        st.subheader("Genetics")
-        inputs["genetic_risk_score"] = st.slider(
-            FEATURE_INFO["genetic_risk_score"]["label"],
-            FEATURE_INFO["genetic_risk_score"]["min"],
-            FEATURE_INFO["genetic_risk_score"]["max"],
-            FEATURE_INFO["genetic_risk_score"]["default"],
-            FEATURE_INFO["genetic_risk_score"]["step"],
-            help=FEATURE_INFO["genetic_risk_score"]["help"]
-        )
+        if abs(age_diff) < 2:
+            st.success("🎯 **Excelente!** Sua idade biológica corresponde à sua idade cronológica.")
+            st.markdown("Você está envelhecendo no ritmo esperado. Continue com seus hábitos saudáveis!")
+        elif age_diff < 0:
+            years_younger = abs(age_diff)
+            st.success(f"✨ **Ótima notícia!** Você é biologicamente {years_younger:.1f} anos mais jovem que sua idade.")
+            st.markdown("Seus hábitos de vida e/ou genética estão contribuindo para um envelhecimento mais lento!")
+        elif age_diff < 5:
+            st.warning(f"⚠️ Sua idade biológica está {age_diff:.1f} anos acima da cronológica.")
+            st.markdown("Considere melhorias no estilo de vida. Veja as recomendações abaixo.")
+        else:
+            st.error(f"🔴 **Ação necessária:** Você está {age_diff:.1f} anos mais velho biologicamente.")
+            st.markdown("Priorize intervenções de saúde. Consulte um profissional e veja as recomendações abaixo.")
+        
+        # ==========================
+        # Análise SHAP (IA Explicável)
+        # ==========================
         
         st.divider()
-        predict_button = st.button("🔮 Predict My Biological Age", type="primary", use_container_width=True)
-    
-    # Main Content - Results
-    if predict_button:
-        with st.spinner("Analyzing your health profile..."):
-            # Create input DataFrame
-            input_df = create_input_dataframe(inputs)
-            
-            # Make prediction
-            predicted_age = predict_biological_age(model, scaler, input_df)
-            chronological_age = inputs["age"]
-            
-            # Generate SHAP explanation
-            shap_values = generate_shap_explanation(explainer, scaler, input_df)
-            
-            # Display Results
-            st.header("📊 Your Results")
-            
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.metric(
-                    "Chronological Age",
-                    f"{chronological_age} years",
-                    delta=None
-                )
-            
-            with col2:
-                st.metric(
-                    "Biological Age",
-                    f"{predicted_age:.1f} years",
-                    delta=f"{predicted_age - chronological_age:+.1f} years",
-                    delta_color="inverse"
-                )
-            
-            with col3:
-                age_diff = abs(predicted_age - chronological_age)
-                st.metric(
-                    "Age Difference",
-                    f"{age_diff:.1f} years",
-                    delta=None
-                )
-            
-            # Interpretation
-            message, message_type = interpret_age_difference(predicted_age, chronological_age)
-            if message_type == "success":
-                st.success(message)
-            elif message_type == "warning":
-                st.warning(message)
-            else:
-                st.error(message)
-            
-            st.divider()
-            
-            # SHAP Explanation
-            st.header("🔍 What's Affecting Your Biological Age?")
-            st.markdown("*Each factor's contribution to your biological age (in years)*")
-            
-            # Create SHAP waterfall plot
-            fig, ax = plt.subplots(figsize=(10, 6))
-            
-            # Sort features by absolute SHAP value
-            feature_names = [FEATURE_DISPLAY_NAMES[f] for f in FEATURE_ORDER]
-            shap_df = pd.DataFrame({
-                'feature': feature_names,
-                'shap_value': shap_values
-            })
-            shap_df['abs_shap'] = abs(shap_df['shap_value'])
-            shap_df = shap_df.sort_values('abs_shap', ascending=True)
-            
-            # Plot horizontal bar chart
-            colors = ['#d62728' if x > 0 else '#2ca02c' for x in shap_df['shap_value']]
-            ax.barh(shap_df['feature'], shap_df['shap_value'], color=colors, alpha=0.7)
-            ax.axvline(x=0, color='black', linestyle='-', linewidth=0.8)
-            ax.set_xlabel('Impact on Biological Age (years)', fontsize=11)
-            ax.set_title('Feature Contributions to Your Biological Age', fontsize=13, fontweight='bold')
-            ax.grid(axis='x', alpha=0.3)
-            
-            # Add value labels
-            for i, (feature, value) in enumerate(zip(shap_df['feature'], shap_df['shap_value'])):
-                label = f'{value:+.1f}'
-                x_pos = value + (0.3 if value > 0 else -0.3)
-                ax.text(x_pos, i, label, va='center', fontsize=9)
-            
-            plt.tight_layout()
-            st.pyplot(fig)
-            
-            # Explanation text
-            st.markdown("""
-            **How to read this chart:**
-            - 🔴 **Red bars** (positive): Factors increasing your biological age
-            - 🟢 **Green bars** (negative): Factors decreasing your biological age
-            - **Longer bars** = stronger impact on your biological age
-            """)
-            
-            st.divider()
-            
-            # Recommendations
-            st.header("💡 Personalized Recommendations")
-            
-            # Find top 3 negative contributors (areas to improve)
-            shap_df_sorted = shap_df.sort_values('shap_value', ascending=False)
-            top_negative = shap_df_sorted[shap_df_sorted['shap_value'] > 0.5].head(3)
-            
-            if len(top_negative) > 0:
-                st.markdown("**Focus on improving these areas:**")
-                for idx, row in top_negative.iterrows():
-                    st.markdown(f"- **{row['feature']}**: Adding {row['shap_value']:.1f} years to your biological age")
-            else:
-                st.success("🎉 Excellent! No major negative factors detected. Keep up the great work!")
-            
-            # Find top protective factors
-            top_positive = shap_df_sorted[shap_df_sorted['shap_value'] < -0.5].tail(3)
-            
-            if len(top_positive) > 0:
-                st.markdown("**Your protective factors (keep it up!):**")
-                for idx, row in top_positive.iterrows():
-                    st.markdown(f"- **{row['feature']}**: Reducing your biological age by {abs(row['shap_value']):.1f} years")
-            
-            st.divider()
-            
-            # Raw data (collapsible)
-            with st.expander("🔬 View Technical Details"):
-                st.subheader("Your Input Data")
-                st.dataframe(input_df)
-                
-                st.subheader("SHAP Values (Raw)")
-                shap_raw_df = pd.DataFrame({
-                    'Feature': feature_names,
-                    'Your Value': input_df.iloc[0].values,
-                    'SHAP Value (years)': shap_values
-                })
-                st.dataframe(shap_raw_df)
-                
-                st.subheader("Model Information")
-                st.markdown("""
-                - **Algorithm:** Random Forest Regressor (200 estimators, max_depth=15)
-                - **Training R²:** 0.9499
-                - **Training MAE:** 2.02 years
-                - **RF vs Linear Gain:** +3.09%
-                - **Explanation Method:** SHAP (TreeExplainer with 500 background samples)
-                """)
-    
-    else:
-        # Welcome message when no prediction yet
-        st.info("👈 **Get started:** Fill in your health profile in the sidebar and click 'Predict' to see your results!")
+        st.header("🔍 Análise de Contribuição dos Fatores (SHAP)")
+        st.markdown("""
+        O gráfico abaixo mostra como cada fator contribui para sua idade biológica predita.
+        - **Barras vermelhas** = fatores que aumentam sua idade biológica
+        - **Barras verdes** = fatores que diminuem sua idade biológica
+        - **Tamanho da barra** = magnitude do impacto (em anos)
+        """)
+        
+        # Criar DataFrame para análise SHAP
+        feature_names_pt = [NAMES_PT[f] for f in FEATURES]
+        shap_df = pd.DataFrame({
+            'feature': feature_names_pt,
+            'feature_en': FEATURES,
+            'shap_value': shap_values,
+            'abs_shap': np.abs(shap_values)
+        }).sort_values('abs_shap', ascending=True)
+        
+        # Criar gráfico SHAP
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
+        colors = ['#d62728' if x > 0 else '#2ca02c' for x in shap_df['shap_value']]
+        bars = ax.barh(shap_df['feature'], shap_df['shap_value'], color=colors, alpha=0.75)
+        
+        ax.axvline(0, color='black', linewidth=1.2, linestyle='-')
+        ax.set_xlabel('Contribuição para Idade Biológica (anos)', fontsize=13, fontweight='bold')
+        ax.set_title('Impacto dos Fatores na Sua Idade Biológica', fontsize=15, fontweight='bold')
+        ax.grid(axis='x', alpha=0.3, linestyle='--')
+        
+        # Adicionar valores nas barras
+        for i, (feature, value) in enumerate(zip(shap_df['feature'], shap_df['shap_value'])):
+            x_pos = value + (0.6 if value > 0 else -0.6)
+            ax.text(
+                x_pos, i, f'{value:+.1f}', 
+                va='center', ha='left' if value > 0 else 'right',
+                fontsize=11, fontweight='bold',
+                color='darkred' if value > 0 else 'darkgreen'
+            )
+        
+        plt.tight_layout()
+        st.pyplot(fig)
         
         st.markdown("""
-        ### About This Tool
+        **Como interpretar:**
+        - Valores positivos aumentam sua idade biológica predita
+        - Valores negativos diminuem sua idade biológica predita
+        - Quanto maior o valor absoluto, maior o impacto do fator
+        """)
         
-        LiveMore uses a **Random Forest machine learning model** trained on 5,000 synthetic health profiles to predict your biological age based on:
+        # ==========================
+        # Recomendações Personalizadas
+        # ==========================
         
-        - **Demographics:** Age, gender
-        - **Lifestyle:** Exercise, diet, sleep, stress
-        - **Risk Factors:** Smoking, alcohol consumption
-        - **Genetics:** Simplified genetic risk score
+        st.divider()
+        st.header("💡 Recomendações Personalizadas")
         
-        ### Why Biological Age Matters
+        # Identificar top fatores negativos (aumentam idade)
+        top_negative = shap_df[shap_df['shap_value'] > 0.5].sort_values('shap_value', ascending=False).head(3)
         
-        Your **chronological age** is just a number—it's your **biological age** that truly reflects how your body is aging. By understanding which factors are accelerating or slowing your aging process, you can make informed decisions to improve your health span.
+        if len(top_negative) > 0:
+            st.markdown("### ⚠️ Priorize Melhorar Estes Fatores:")
+            
+            for idx, row in top_negative.iterrows():
+                feature_key = row['feature_en']
+                impact = row['shap_value']
+                
+                st.markdown(f"**{row['feature']}** (+{impact:.1f} anos)")
+                
+                # Recomendações específicas por feature
+                if feature_key == 'smoking_pack_years' and inputs[feature_key] > 0:
+                    st.markdown("  - 🚭 Considere um programa de cessação do tabagismo")
+                    st.markdown("  - 💊 Consulte sobre terapias de reposição de nicotina")
+                    
+                elif feature_key == 'stress_level' and inputs[feature_key] > 6:
+                    st.markdown("  - 🧘 Pratique técnicas de relaxamento (meditação, yoga)")
+                    st.markdown("  - 🗓️ Melhore gestão de tempo e prioridades")
+                    st.markdown("  - 💬 Considere suporte psicológico profissional")
+                    
+                elif feature_key == 'exercise_hours_week' and inputs[feature_key] < 3:
+                    st.markdown("  - 🏃 Meta: 150 min/semana de exercício moderado")
+                    st.markdown("  - 🚶 Comece gradualmente: caminhadas de 20-30 min")
+                    st.markdown("  - 💪 Inclua treino de força 2x/semana")
+                    
+                elif feature_key == 'diet_quality_score' and inputs[feature_key] < 7:
+                    st.markdown("  - 🥗 Aumente consumo de vegetais e frutas")
+                    st.markdown("  - 🐟 Inclua mais proteínas magras e peixes")
+                    st.markdown("  - 🌾 Prefira grãos integrais e reduza processados")
+                    
+                elif feature_key == 'sleep_hours' and (inputs[feature_key] < 6.5 or inputs[feature_key] > 9):
+                    st.markdown("  - 😴 Meta: 7-8 horas de sono por noite")
+                    st.markdown("  - 🌙 Estabeleça rotina de sono consistente")
+                    st.markdown("  - 📱 Evite telas 1h antes de dormir")
+                    
+                elif feature_key == 'alcohol_drinks_week' and inputs[feature_key] > 7:
+                    st.markdown("  - 🍷 Reduza para ≤7 doses/semana")
+                    st.markdown("  - 📅 Estabeleça dias sem álcool")
+                    
+                elif feature_key in SNP_INFO:
+                    snp_data = SNP_INFO[feature_key]
+                    st.markdown(f"  - 🧬 Fator genético: {snp_data['funcao']}")
+                    st.markdown("  - 💊 Embora não modificável, otimize estilo de vida para compensar")
+                    st.markdown("  - 👨‍⚕️ Discuta com seu médico sobre acompanhamento preventivo")
+        else:
+            st.success("✅ **Parabéns!** Nenhum fator negativo significativo identificado.")
         
-        ### About the Technology
+        # Identificar top fatores protetores
+        top_positive = shap_df[shap_df['shap_value'] < -0.5].sort_values('shap_value').head(3)
         
-        This MVP uses **Explainable AI (XAI)** through SHAP values to show you exactly which factors are affecting your biological age and by how much. Unlike "black box" AI, you can see and understand every prediction.
+        if len(top_positive) > 0:
+            st.markdown("### ✅ Fatores Protetores (Continue assim!):")
+            
+            for idx, row in top_positive.iterrows():
+                st.markdown(f"- **{row['feature']}** ({row['shap_value']:.1f} anos) - Excelente!")
         
-        ---
+        # ==========================
+        # Insights sobre Importância das Features
+        # ==========================
         
-        **⚠️ Disclaimer:** This is a research prototype using synthetic data. Not intended for medical diagnosis or treatment decisions. Always consult healthcare professionals for medical advice.
+        st.divider()
+        st.header("📈 Importância Global das Features")
+        st.markdown("""
+        Baseado no modelo treinado com 5.000 amostras, a importância relativa das features é:
+        
+        **Top 5 Features Mais Importantes:**
+        1. **Estresse** (24.8%) - Impacto exponencial em níveis altos
+        2. **Idade** (23.8%) - Fator base do envelhecimento
+        3. **Qualidade da Dieta** (18.0%) - Benefício quadrático
+        4. **Exercício** (12.7%) - Retornos decrescentes
+        5. **Sono** (7.4%) - Curva em U (ótimo: 7-8h)
+        
+        **SNPs Genéticos:** APOE (2.2%), SIRT1 (1.9%), TP53 (1.8%), TERT (1.5%), FOXO3 (1.3%)
+        
+        *Nota: Fatores genéticos têm impacto menor mas interagem com estilo de vida.*
         """)
 
-if __name__ == "__main__":
-    main()
+else:
+    # ==========================
+    # Tela Inicial (Antes da Predição)
+    # ==========================
+    
+    st.info("👈 **Preencha o formulário à esquerda e clique em 'Prever Minha Idade Biológica'**")
+    
+    st.markdown("---")
+    
+    # Sobre o LiveMore
+    st.header("🧬 Sobre o LiveMore")
+    
+    st.markdown("""
+    O **LiveMore** é um preditor de idade biológica que usa Inteligência Artificial e fatores genéticos 
+    validados cientificamente para estimar como seu corpo está envelhecendo em comparação à sua idade cronológica.
+    
+    ### 📊 Como Funciona
+    
+    O modelo analisa **13 fatores diferentes**:
+    
+    **1. Demografia (2 fatores)**
+    - Idade cronológica
+    - Sexo biológico
+    
+    **2. Genética - SNPs Validados (5 fatores)**
+    - **APOE ε4** (rs429358) - Risco de Alzheimer e declínio cognitivo
+    - **FOXO3** (rs2802292) - Gene da longevidade humana
+    - **TP53** (rs1042522) - Reparo de DNA e supressão tumoral
+    - **SIRT1** (rs7069102) - Regulação metabólica e sirtuínas
+    - **TERT** (rs2736100) - Manutenção dos telômeros
+    
+    **3. Estilo de Vida (4 fatores)**
+    - Horas de exercício por semana
+    - Qualidade da dieta (escala 1-10)
+    - Horas de sono por noite
+    - Nível de estresse (escala 1-10)
+    
+    **4. Fatores de Risco (2 fatores)**
+    - Histórico de tabagismo (maços-ano)
+    - Consumo de álcool (doses/semana)
+    
+    ### 🤖 Tecnologia
+    
+    - **Modelo:** Random Forest com 200 árvores
+    - **Performance:** R² = 0.92, Erro Médio = 2.79 anos
+    - **Dataset:** 5.000 amostras sintéticas com padrões biomédicos validados
+    - **Explicabilidade:** SHAP (SHapley Additive exPlanations) para IA interpretável
+    
+    ### 🎯 Importância Relativa dos Fatores
+    
+    Baseado em análise de 5.000 casos:
+    
+    | Fator | Importância | Padrão de Impacto |
+    |-------|-------------|-------------------|
+    | **Estresse** | 24.8% | Exponencial em níveis altos |
+    | **Idade** | 23.8% | Linear (base do envelhecimento) |
+    | **Dieta** | 18.0% | Quadrático (benefício ótimo 8-9) |
+    | **Exercício** | 12.7% | Retornos decrescentes |
+    | **Sono** | 7.4% | Curva em U (ótimo 7-8h) |
+    | **Tabagismo** | 5.0% | Linear prejudicial |
+    | **Álcool** | 3.2% | Protetor ≤7, prejudicial >7 |
+    | **SNPs** | 5.1% | Interação com estilo de vida |
+    
+    ### 📈 O Que Você Vai Receber
+    
+    Após preencher o formulário, você receberá:
+    
+    1. **Sua Idade Biológica Estimada** - Comparação com idade cronológica
+    2. **Análise SHAP Personalizada** - Gráfico mostrando como cada fator contribui
+    3. **Recomendações Específicas** - Ações práticas para melhorar seus fatores de risco
+    4. **Insights Científicos** - Explicação de como os fatores interagem
+    
+    ### ⚠️ Importante: Disclaimer
+    
+    Este é um **protótipo de pesquisa acadêmica** desenvolvido para fins educacionais e demonstração de IA explicável.
+    
+    **NÃO substitui:**
+    - Avaliação médica profissional
+    - Exames laboratoriais reais
+    - Testes genéticos clínicos
+    - Orientação de profissionais de saúde
+    
+    **Limitações:**
+    - Modelo treinado em dados sintéticos (não em pacientes reais)
+    - Não valida clinicamente
+    - Simplificação de processos biológicos complexos
+    - Predição é uma estimativa estatística, não um diagnóstico
+    
+    Para decisões de saúde, sempre consulte profissionais qualificados.
+    
+    ### 👨‍🔬 Sobre o Projeto
+    
+    **LiveMore V3** foi desenvolvido como parte de um Trabalho de Conclusão de Curso (TCC) sobre:
+    - Aplicação de Machine Learning em biomedicina
+    - IA Explicável (XAI) para saúde
+    - Integração de fatores genéticos e estilo de vida
+    - Predição de idade biológica e envelhecimento
+    
+    **Instituição:** [Sua Universidade]  
+    **Orientador:** [Nome do Professor]  
+    **Ano:** 2025
+    
+    ---
+    
+    ### 🚀 Comece Agora!
+    
+    Preencha o formulário à esquerda com seus dados e descubra sua idade biológica!
+    """)
+

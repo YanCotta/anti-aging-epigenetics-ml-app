@@ -1,22 +1,26 @@
 {
-  "model_version": "v2_mvp",
-  "training_date": "2025-10-28T12:42:31.327199",
+  "model_version": "v3_with_snps",
+  "training_date": "2025-10-28T13:12:48.965560",
   "n_samples": 5000,
   "features": [
     "age",
     "gender",
+    "APOE_rs429358",
+    "FOXO3_rs2802292",
+    "TP53_rs1042522",
+    "SIRT1_rs7069102",
+    "TERT_rs2736100",
     "exercise_hours_week",
     "diet_quality_score",
     "sleep_hours",
     "stress_level",
     "smoking_pack_years",
-    "alcohol_drinks_week",
-    "genetic_risk_score"
+    "alcohol_drinks_week"
   ],
   "performance": {
-    "train_r2": 0.9499092567160571,
-    "train_mae": 2.0175170012383776,
-    "train_rmse": 2.8692003567916613
+    "train_r2": 0.9190738251505047,
+    "train_mae": 2.786478366753915,
+    "train_rmse": 3.8193687708300046
   },
   "hyperparameters": {
     "n_estimators": 200,

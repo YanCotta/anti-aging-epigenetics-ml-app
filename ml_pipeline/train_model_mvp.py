@@ -15,12 +15,12 @@ import json
 from pathlib import Path
 
 print("=" * 60)
-print("LIVEMORE MVP MODEL TRAINING")
-print("Training Random Forest for Streamlit Demo")
+print("LIVEMORE V3 MODEL TRAINING")
+print("Training Random Forest with SNP Features")
 print("=" * 60)
 
 # Paths
-DATA_DIR = Path(__file__).parent / "data_generation" / "datasets_livemore_mvp"
+DATA_DIR = Path(__file__).parent / "data_generation" / "datasets_livemore_v3"
 MODEL_DIR = Path(__file__).parent.parent / "antiaging-mvp" / "streamlit_app" / "app_model"
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -35,10 +35,9 @@ feature_cols = [col for col in train_df.columns if col != 'biological_age']
 X_train = train_df[feature_cols]
 y_train = train_df['biological_age']
 
-# Handle categorical encoding (gender)
+# Handle categorical encoding (gender is already 0/1 in V3)
 X_train_encoded = X_train.copy()
-if 'gender' in X_train_encoded.columns:
-    X_train_encoded['gender'] = X_train_encoded['gender'].map({'M': 0, 'F': 1})
+# No need to encode gender - already numeric in V3
 
 print(f"   Features used: {feature_cols}")
 print(f"   Target range: {y_train.min():.1f} - {y_train.max():.1f} years")
@@ -103,7 +102,7 @@ print(f"   ✓ SHAP Explainer: {MODEL_DIR / 'livemore_explainer_v2.pkl'}")
 
 # Save metadata
 metadata = {
-    'model_version': 'v2_mvp',
+    'model_version': 'v3_with_snps',
     'training_date': pd.Timestamp.now().isoformat(),
     'n_samples': len(train_df),
     'features': feature_cols,
@@ -129,6 +128,11 @@ print("\n🧪 Testing on test sets...")
 test_files = list(DATA_DIR.glob("test_*.csv"))
 for test_file in test_files:
     test_df = pd.read_csv(test_file)
+    
+    if 'biological_age' not in test_df.columns:
+        print(f"   {test_file.name:35s}: SKIPPED (no target column)")
+        continue
+    
     X_test = test_df[feature_cols].copy()
     
     if 'gender' in X_test.columns:
@@ -144,8 +148,8 @@ for test_file in test_files:
     print(f"   {test_file.name:35s}: R²={test_r2:.4f}, MAE={test_mae:.2f} years")
 
 print("\n" + "=" * 60)
-print("✅ MODEL TRAINING COMPLETE")
+print("✅ MODEL TRAINING COMPLETE (V3 - SNPs + Balanced)")
 print("=" * 60)
 print(f"\nArtifacts saved to: {MODEL_DIR}")
-print("\nReady for Streamlit MVP development!")
-print("Next step: Build the Streamlit app using these artifacts")
+print("\nReady to test Portuguese Streamlit app with realistic results!")
+print("Run: streamlit run antiaging-mvp/streamlit_app/app.py")
