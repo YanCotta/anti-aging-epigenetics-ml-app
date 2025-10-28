@@ -1,17 +1,17 @@
 # Anti-Aging Epigenetics ML App - Documentation Index
 
-**Last Updated**: October 16, 2025  
-**Project Status**: 🔄 Active Development - Strategic Pivot Phase (Uncertainty Integration)
+**Last Updated**: October 28, 2025  
+**Project Status**: ✅ Week 1 Complete - Data & Models Ready | 🏗️ Week 2 Starting - Streamlit Development
 
 ---
 
 ## 📖 Quick Start Guide
 
 **New to this project?** Start here in order:
-1. Read [README.md](../README.md) - Project overview and current status
-2. Review [ROADMAP.md](ROADMAP.md) - Development plan and strategic direction
-3. Check [DETAILED_ISSUES.md](DETAILED_ISSUES.md) - Current tasks and priorities
-4. See [CHANGELOG.md](CHANGELOG.md) - What's been done and when
+1. Read [README.md](../README.md) - MVP overview and current status
+2. Review [ml_pipeline/README.md](../ml_pipeline/README.md) - Data generation and model training
+3. Check [streamlit_app/README.md](../antiaging-mvp/streamlit_app/README.md) - App development guide
+4. See [CHANGELOG.md](CHANGELOG.md) - Complete implementation history
 
 ---
 
@@ -20,35 +20,52 @@
 ### **Core Documentation** (Read These First)
 
 #### 1. [README.md](../README.md)
-**Purpose**: Project entry point and navigation hub  
+**Purpose**: Project entry point for LiveMore MVP  
 **Audience**: Everyone  
+**Status**: ✅ Updated Oct 28, 2025  
 **Content**:
-- Project overview and objectives
-- Quick links to all documentation
-- Core pipeline components
-- Architecture summary
-- Current development status
+- MVP-focused project overview
+- Business-oriented strategic pivot rationale
+- Current status: Week 1 complete, Week 2 starting
+- Repository structure (actual current state)
+- 20-day sprint breakdown
+- Quick start for Streamlit development
 
-#### 2. [ROADMAP.md](ROADMAP.md)
-**Purpose**: Comprehensive development plan and strategic direction  
-**Audience**: Developers, project managers, advisors  
+#### 2. [ml_pipeline/README.md](../ml_pipeline/README.md)
+**Purpose**: ML development pipeline documentation  
+**Audience**: Developers working on data/models  
+**Status**: ✅ Created Oct 28, 2025  
 **Content**:
-- ✅ Current status: Strategic pivot to uncertainty integration (Issues #49-53)
-- ✅ Publication-ready baseline achievements (Issues #43-47 completed Oct 14)
-- ✅ Quantitative validation results (Oct 16 baseline analysis)
-- System architecture and design decisions
-- Academic guidance and research strategy
-- Complete development timeline
-- Implementation success metrics
+- Directory structure with status indicators
+- Key scripts documentation (train_model_mvp.py, quick_validation_mvp.py)
+- Data generator comparison (MVP simple vs scientific complex)
+- Feature descriptions and non-linear patterns
+- Interaction effects documentation
+- Usage examples and troubleshooting
 
-#### 3. [DETAILED_ISSUES.md](DETAILED_ISSUES.md)
-**Purpose**: Complete technical task specifications  
-**Audience**: Developers implementing features  
+#### 3. [streamlit_app/README.md](../antiaging-mvp/streamlit_app/README.md)
+**Purpose**: Streamlit app development guide  
+**Audience**: Developers building the UI  
+**Status**: ✅ Updated Oct 28, 2025  
 **Content**:
-- 🔄 NEW: Issues #49-53 (Uncertainty & Chaos Integration) - **ACTIVE**
-- ✅ COMPLETED: Issues #43-48 (Oct 14, 2025)
-- All 53+ development issues with detailed specs
-- Acceptance criteria and validation requirements
+- Strategic context and pivot journey
+- Model artifacts documentation
+- Feature specifications (9 inputs with ranges)
+- Implementation guide with code examples
+- SHAP integration instructions
+- UI/UX guidelines with business language
+- Troubleshooting and success criteria
+
+#### 4. [CHANGELOG.md](CHANGELOG.md)
+**Purpose**: Complete implementation history  
+**Audience**: Anyone tracking progress or understanding decisions  
+**Status**: ✅ Updated Oct 28, 2025  
+**Content**:
+- Oct 22-28: Strategic pivot to MVP complete
+- Data generation attempts and results
+- Model training completion
+- Documentation reorganization
+- Historical entries: Issues #43-49, multivariate analysis, etc.
 - File modification requirements
 - Implementation notes and dependencies
 
@@ -65,34 +82,37 @@
 
 ---
 
-### **Scientific & Validation Documentation**
+### **Strategic & Planning Documentation**
+
+#### 5. [PIVOT.md](PIVOT.md)
+**Purpose**: Strategic pivot rationale and 20-day sprint plan  
+**Audience**: Project stakeholders, thesis committee  
+**Status**: 📚 Historical reference  
+**Content**:
+- Original pivot plan from production architecture to MVP
+- 20-day sprint breakdown (3 weeks)
+- Issue #50 implementation details
+- Strategic decision-making rationale
 
 #### 6. [PROJECT_STATUS_OCT_2025.md](PROJECT_STATUS_OCT_2025.md)
-**Purpose**: Comprehensive status report for strategic pivot with detailed baseline analysis  
-**Audience**: Project stakeholders, advisors, thesis committee, data scientists  
+**Purpose**: Comprehensive project status and findings  
+**Audience**: Project stakeholders, advisors, thesis committee  
+**Status**: ⏳ Needs Oct 28 update  
 **Content**:
-- Executive summary of uncertainty integration initiative
-- Complete history of Issues #43-48 achievements (Oct 14)
-- ✅ **NEW APPENDIX**: Detailed baseline statistical analysis (Oct 16, 2025)
-  - All 26 notebook codecells executed successfully
-  - Quantitative validation of all professor concerns
-  - Data quality assessment: 0/5 PASS (requires major redesign)
-  - 🎯 Specific numerical targets for chaos injection
-  - 5-phase implementation roadmap with validation criteria
-- Repository organization and module inventory
-- Publication-ready results and critical findings
-- Next steps and academic impact assessment
+- Historical: Issues #43-49 achievements
+- Baseline statistical analysis (Oct 16)
+- Chaos injection attempts and results
+- **TO ADD**: Oct 28 MVP pivot and completion
 
 #### 7. [STATISTICAL_VALIDATION_SUMMARY.md](STATISTICAL_VALIDATION_SUMMARY.md)
-**Purpose**: Publication-ready statistical results (Historical Baseline)  
+**Purpose**: Publication-ready statistical results  
 **Audience**: Researchers, thesis committee  
+**Status**: 📚 Historical baseline  
 **Content**:
-- ⚠️ **Historical baseline** - Pre-chaos results
-- Bootstrap confidence intervals (n=2000)
-- Permutation tests (n=1000) with FDR correction
-- 5 aging clock benchmarks comparison
-- Critical findings and limitations
-- Statistical rigor methodology
+- Pre-chaos baseline results
+- Bootstrap confidence intervals
+- Permutation tests with FDR correction
+- Literature comparisons
 
 ---
 
@@ -134,28 +154,29 @@
 
 ## 🎯 Documentation by Use Case
 
-### **"I want to understand the project"**
+### **"I want to understand the MVP"**
 Start with:
-1. [README.md](../README.md) - Overview
-2. [README_PROFESSORS.md](../README_PROFESSORS.md) - Academic depth
+1. [README.md](../README.md) - MVP overview and business rationale
+2. [ml_pipeline/README.md](../ml_pipeline/README.md) - How data and models work
+3. [CHANGELOG.md](CHANGELOG.md) - Oct 28 pivot summary
 
-### **"I want to know what to work on next"**
+### **"I want to build the Streamlit app"**
 Go to:
-1. [ROADMAP.md](ROADMAP.md) - Current status section
-2. [DETAILED_ISSUES.md](DETAILED_ISSUES.md) - Issues #49-53 (Active tasks)
-3. [BASELINE_NOTEBOOK_ANALYSIS_OCT_16_2025.md](BASELINE_NOTEBOOK_ANALYSIS_OCT_16_2025.md) - Implementation targets
+1. [streamlit_app/README.md](../antiaging-mvp/streamlit_app/README.md) - Complete dev guide
+2. [ml_pipeline/README.md](../ml_pipeline/README.md) - Model artifacts info
+3. [README.md](../README.md) - Feature specifications
 
-### **"I want to implement Issue #49"**
+### **"I want to understand what happened (research journey)"**
 Read in order:
-1. [DETAILED_ISSUES.md](DETAILED_ISSUES.md) - Issue #49 specification
-2. [BASELINE_NOTEBOOK_ANALYSIS_OCT_16_2025.md](BASELINE_NOTEBOOK_ANALYSIS_OCT_16_2025.md) - Quantitative targets
-3. [ROADMAP.md](ROADMAP.md) - Strategic context
+1. [CHANGELOG.md](CHANGELOG.md) - Complete history from Oct 28 back
+2. [PROJECT_STATUS_OCT_2025.md](PROJECT_STATUS_OCT_2025.md) - Detailed findings
+3. [PIVOT.md](PIVOT.md) - Strategic decisions
 
-### **"I want to understand what's been done"**
+### **"I need to prepare for thesis defense"**
 Check:
-1. [CHANGELOG.md](CHANGELOG.md) - Complete history
-2. [ROADMAP.md](ROADMAP.md) - Completed sections
-3. [STATISTICAL_VALIDATION_SUMMARY.md](STATISTICAL_VALIDATION_SUMMARY.md) - Baseline results
+1. [README.md](../README.md) - MVP narrative and achievements
+2. [README_PROFESSORS.md](../README_PROFESSORS.md) - Academic presentation
+3. [CHANGELOG.md](CHANGELOG.md) - Technical journey and decisions
 
 ### **"I want to prepare for thesis defense"**
 Review:
@@ -176,29 +197,38 @@ Read:
 
 | Date | Milestone | Documents |
 |------|-----------|-----------|
-| **Oct 16, 2025** | 🔄 Baseline analysis complete, Issues #49-53 defined | BASELINE_NOTEBOOK_ANALYSIS, ROADMAP, DETAILED_ISSUES |
-| **Oct 14, 2025** | ✅ Publication-ready pipeline (Issues #43-47) | STATISTICAL_VALIDATION_SUMMARY, CHANGELOG |
-| **Sep 21, 2025** | ✅ Repository cleanup and doc consolidation | DOCUMENTATION_ORGANIZATION |
-| **Sep 17, 2025** | ✅ Critical issues identified (#43-44) | ROADMAP, DETAILED_ISSUES |
+| **Oct 22-28, 2025** | ✅ Strategic Pivot to MVP - Week 1 Complete | README, ml_pipeline/README, CHANGELOG |
+| **Oct 21, 2025** | ⚠️ Chaos injection attempted, RF underperformed | CHANGELOG (Issue #49) |
+| **Oct 16, 2025** | 📊 Baseline analysis complete | PROJECT_STATUS_OCT_2025 |
+| **Oct 14, 2025** | ✅ Publication-ready pipeline (Issues #43-47) | STATISTICAL_VALIDATION_SUMMARY |
+| **Sep 21, 2025** | ✅ Repository cleanup | CHANGELOG |
 
 ---
 
 ## 🔄 Current Development Status
 
-### **Active Phase: Strategic Pivot (Oct 16 - Present)**
-**Focus**: Multi-level uncertainty and chaos integration
+### **Active Phase: MVP Development (Oct 22 - Nov 11)**
+**Focus**: Streamlit app for thesis defense in 20 days
 
-**Active Issues**:
-- **Issue #49**: Chaos injection engine (READY TO START)
-- **Issue #50**: Uncertainty-aware evaluation toolkit
-- **Issue #51**: Monte Carlo experiment orchestrator
-- **Issue #52**: Documentation alignment
-- **Issue #53**: Chaos governance & guardrails
+**Week 1 (Oct 22-28)**: ✅ COMPLETE
+- Data generation with business-focused approach
+- Model training (RF with 3-4% gain over Linear)
+- Documentation reorganization
+
+**Week 2 (Oct 29-Nov 4)**: 🏗️ IN PROGRESS
+- Streamlit UI development
+- SHAP explanation integration
+- Business language polish
+
+**Week 3 (Nov 5-11)**: ⏳ UPCOMING
+- Thesis materials preparation
+- Demo polish and practice
+- Defense presentation
 
 **Primary Documents**:
-- [ROADMAP.md](ROADMAP.md) - Strategic direction
-- [DETAILED_ISSUES.md](DETAILED_ISSUES.md) - Task specifications
-- [PROJECT_STATUS_OCT_2025.md](PROJECT_STATUS_OCT_2025.md) - Targets and baseline analysis
+- [README.md](../README.md) - MVP overview
+- [streamlit_app/README.md](../antiaging-mvp/streamlit_app/README.md) - Dev guide
+- [CHANGELOG.md](CHANGELOG.md) - Implementation history
 
 ---
 
