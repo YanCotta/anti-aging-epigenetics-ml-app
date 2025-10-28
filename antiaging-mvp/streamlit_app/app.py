@@ -46,9 +46,7 @@ def load_model_artifacts():
         
         model = joblib.load(model_path)
         scaler = joblib.load(scaler_path)
-        
-        with open(explainer_path, "rb") as f:
-            explainer = pickle.load(f)
+        explainer = joblib.load(explainer_path)
         
         return model, scaler, explainer
     except FileNotFoundError as e:
