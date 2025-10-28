@@ -63,17 +63,17 @@ class ChaosConfig:
     enable_interactions: bool = True
     n_second_order: int = 60  # Number of 2nd order interactions (target: 50+)
     n_third_order: int = 20   # Number of 3rd order interactions (target: 20)
-    interaction_strength: float = 1.0  # Multiplier for interaction effects
+    interaction_strength: float = 5.0  # Multiplier for interaction effects (MVP: aggressive boost)
     
     # Phase 3: Age-Dependent Variance Parameters
     enable_age_variance: bool = True
-    young_noise_scale: float = 2.0    # Young adults (18-35): low variance
-    middle_noise_scale: float = 4.0   # Middle-aged (35-55): medium variance
-    elderly_noise_scale: float = 6.0  # Elderly (70+): high variance
+    young_noise_scale: float = 3.0    # Young adults (18-35): low variance
+    middle_noise_scale: float = 6.0   # Middle-aged (35-55): medium variance
+    elderly_noise_scale: float = 18.0  # Elderly (70+): high variance (MVP: 18x for strong effect)
     
     # Phase 4: Feature Correlation Parameters
     enable_correlations: bool = True
-    pathway_correlation: float = 0.4  # Correlation within biological pathways
+    pathway_correlation: float = 0.65  # Correlation within biological pathways (MVP: boosted to 0.65)
     lifestyle_correlation: float = 0.3  # Correlation among lifestyle factors
     methylation_correlation: float = 0.35  # CpG sites in same region
     
