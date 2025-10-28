@@ -1,0 +1,27 @@
+{
+  "model_version": "v2_mvp",
+  "training_date": "2025-10-28T11:17:49.699814",
+  "n_samples": 5000,
+  "features": [
+    "age",
+    "gender",
+    "exercise_hours_week",
+    "diet_quality_score",
+    "sleep_hours",
+    "stress_level",
+    "smoking_pack_years",
+    "alcohol_drinks_week",
+    "genetic_risk_score"
+  ],
+  "performance": {
+    "train_r2": 0.9499092567160571,
+    "train_mae": 2.0175170012383776,
+    "train_rmse": 2.8692003567916613
+  },
+  "hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 15,
+    "min_samples_split": 10,
+    "min_samples_leaf": 5
+  }
+}
